@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import ProductList from "./ProductList"
+import messages from "../shared/messages"
 
 class ProductBook extends Component {
     constructor() {
@@ -9,26 +10,22 @@ class ProductBook extends Component {
             products: [
                 {
                     name: "mleko",
-                    editMode: false,
-                    newName: ''
+                    editMode: false
                 },
                 {
                     name: "masło",
-                    editMode: false,
-                    newName: ''
+                    editMode: false
                 },
                 {
                     name: "jajko",
-                    editMode: false,
-                    newName: ''
+                    editMode: false
                 },
                 {
                     name: "sól",
-                    editMode: false,
-                    newName: ''
+                    editMode: false
                 }
             ],
-            newProduct: ""
+            newProductName: ""
         };
     }
 
@@ -39,12 +36,14 @@ class ProductBook extends Component {
         });
     };
 
-    addProduct = () => {
+    addProduct = (event) => {
+        event.preventDefault();
         this.setState(state => ({
             products: [...state.products, {
                 name: state.newProductName,
                 editMode: false
-            }]
+            }],
+            newProductName: ""
         }));
     };
 
@@ -58,7 +57,7 @@ class ProductBook extends Component {
         this.setState(state => ({
             products: state.products.map(product => {
                 return product === selectedProduct ?
-                    {...product, editMode: !selectedProduct.editMode} :
+                    {...product, editMode: !selectedProduct.editMode, newName: selectedProduct.name} :
                     product;
             })
         }));
@@ -87,8 +86,20 @@ class ProductBook extends Component {
     render() {
         return (
             <div>
-                <input onChange={this.setNewProduct}/>
-                <button onClick={this.addProduct}>Dodaj produkt</button>
+                <form onSubmit={this.addProduct}>
+                    <label>
+                        Nowy produkt:
+                        <input
+                            type="text"
+                            value={this.state.newProductName}
+                            onChange={this.setNewProduct}
+                        />
+                    </label>
+                    <input
+                        type="submit"
+                        value={messages.pl.products.labels.addProduct}
+                    />
+                </form>
                 <ProductList
                     products={this.state.products}
                     removeProduct={this.removeProduct}

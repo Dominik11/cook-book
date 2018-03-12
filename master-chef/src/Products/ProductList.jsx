@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
+import PropTypes from "prop-types";
+import messages from "../shared/messages";
+import Button from "../shared/Button";
 
 class ProductList extends Component {
-
-    constructor(props){
-        super(props)
-    }
 
     renderProductList = (products) => {
         return products.map(this.renderProduct)
@@ -16,24 +15,66 @@ class ProductList extends Component {
     };
 
     renderProduct = (product) => {
-        return product.editMode ? (
+        return product.editMode ?
+            this.renderEditedProductRow(product) :
+            this.renderProductRow(product);
+    };
+
+    renderEditedProductRow = (product) => {
+        const buttonsConfig = [
+            {
+                action: this.props.removeProduct,
+                label: "remove"
+            },
+            {
+                action: this.props.updateProduct,
+                label: "save"
+            },
+            {
+                action: this.props.switchProductEdition,
+                label: "cancel"
+            }
+        ];
+
+        return (
             <div>
                 <input
                     type="text"
                     onChange={(event) => this.setNewName(event, product)}
                     value={product.newName}
                 />
-                <button onClick={() => this.props.removeProduct(product)}>Usuń</button>
-                <button onClick={() => this.props.updateProduct(product)}>Zapisz</button>
-                <button onClick={() => this.props.switchProductEdition(product)}>Anuluj edycję</button>
-            </div>
-        ) : (
-            <div>
-                <li key={product.name}>{product.name}</li>
-                <button onClick={() => this.props.removeProduct(product)}>Usuń</button>
-                <button onClick={() => this.props.switchProductEdition(product)}>Edytuj</button>
+                {this.renderButtons(buttonsConfig, product)}
             </div>
         )
+    };
+
+    renderProductRow = (product) => {
+        const buttonsConfig = [
+            {
+                action: this.props.removeProduct,
+                label: "remove"
+            },
+            {
+                action: this.props.switchProductEdition,
+                label: "edit"
+            }
+        ];
+
+        return (
+            <div>
+                <li key={product.name}>{product.name}</li>
+                {this.renderButtons(buttonsConfig, product)}
+            </div>
+        )
+    };
+
+    renderButtons = (buttonsConfig, product) => {
+        return buttonsConfig.map(buttonConfig =>
+            <Button
+                onButtonClick={() => buttonConfig.action(product)}
+                label={messages.pl.products.labels[buttonConfig.label]}
+            />
+        );
     };
 
     render() {
@@ -44,9 +85,17 @@ class ProductList extends Component {
                 {this.renderProductList(this.props.products)}
             </ul>
         ) : (
-            <p>Brak produktów</p>
+            <p>{messages.pl.products.labels.emptyList}</p>
         );
     }
 }
+
+ProductList.propTypes = {
+    products: PropTypes.array,
+    removeProduct: PropTypes.func,
+    switchProductEdition: PropTypes.func,
+    updateProduct: PropTypes.func,
+    setNewName: PropTypes.func
+};
 
 export default ProductList;
