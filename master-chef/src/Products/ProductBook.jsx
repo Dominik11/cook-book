@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import lodash from "lodash";
+import { Form, Text } from 'react-form';
 import ProductList from "./ProductList"
 import messages from "../shared/messages"
 
@@ -9,29 +11,19 @@ class ProductBook extends Component {
         super(props);
 
         this.state = {
-            products: props.products,
-            newProductName: ""
+            products: props.products
         };
     }
 
-    setNewProduct = (event) => {
-        const productName = event.currentTarget.value;
-        this.setState({
-            newProductName: productName
-        });
-    };
-
-    addProduct = (event) => {
-        event.preventDefault();
+    addProduct = (newProductFormValues) => {
         this.setState(state => ({
             products: [
                 ...state.products,
                 {
                     id: this.props.idGenerator(),
-                    name: state.newProductName
+                    name: newProductFormValues.newProductName
                 }
-            ],
-            newProductName: ""
+            ]
         }));
     };
 
@@ -48,7 +40,8 @@ class ProductBook extends Component {
                     {
                         ...product,
                         editMode: !selectedProduct.editMode,
-                        newName: selectedProduct.name
+                        newName: selectedProduct.name,
+                        error: null
                     } :
                     product;
             })
@@ -56,13 +49,33 @@ class ProductBook extends Component {
     };
 
     updateProduct = (productToUpdate) => {
+        if (lodash.isEmpty(productToUpdate.newName)) {
+            this.throwUpdateProductNameValidationError(productToUpdate);
+
+            return;
+        }
+
         this.setState(state => ({
             products: state.products.map(product => {
                 return product.id === productToUpdate.id ?
                     {
                         ...product,
                         editMode: false,
-                        name: productToUpdate.newName
+                        name: productToUpdate.newName,
+                        error: null
+                    } :
+                    product;
+            })
+        }));
+    };
+
+    throwUpdateProductNameValidationError = (productToUpdate) => {
+        this.setState(state => ({
+            products: state.products.map(product => {
+                return product.id === productToUpdate.id ?
+                    {
+                        ...product,
+                        error: messages.pl.validation.fieldNullOrEmpty
                     } :
                     product;
             })
@@ -83,22 +96,43 @@ class ProductBook extends Component {
     };
 
     render() {
+        const validateNewProduct = value => ({
+            error: !value ? messages.pl.validation.fieldNullOrEmpty : null
+        });
+
         return (
             <div>
-                <form onSubmit={this.addProduct}>
-                    <label>
-                        {messages.pl.products.labels.newProduct}:
-                        <input
-                            type="text"
-                            value={this.state.newProductName}
-                            onChange={this.setNewProduct}
-                        />
-                    </label>
-                    <input
-                        type="submit"
-                        value={messages.pl.products.labels.addProduct}
-                    />
-                </form>
+                <Form
+                    onSubmit={(values, e, formApi) => {
+                        this.addProduct(values);
+                        formApi.resetAll();
+                    }}
+                    validateOnSubmit
+                >
+                    {formApi => (
+                        <form
+                            onSubmit={formApi.submitForm}
+                            id="newProductForm"
+                            className="mb-4"
+                        >
+                            <label htmlFor="newProductName">{messages.pl.products.labels.newProduct}:</label>
+                            <Text
+                                field="newProductName"
+                                id="newProductName"
+                                validate={validateNewProduct}
+                                className={formApi.errors && formApi.errors.newProductName ? "invalid-value" : ""}
+                            />
+                            <div className="validation-error">{formApi.errors ? formApi.errors.newProductName : null}</div>
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                            >
+                                {messages.pl.products.labels.addProduct}
+                            </button>
+
+                        </form>
+                    )}
+                </Form>
                 <ProductList
                     products={this.state.products}
                     removeProduct={this.removeProduct}

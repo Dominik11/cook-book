@@ -42,7 +42,9 @@ class ProductList extends Component {
                     type="text"
                     onChange={(event) => this.setNewName(event, product)}
                     value={product.newName}
+                    className={product.error ? "invalid-value" : ""}
                 />
+                {product.error ? <span class="validation-error">{product.error}</span> : null}
                 {this.renderButtons(buttonsConfig, product)}
             </div>
         )

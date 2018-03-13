@@ -53,3 +53,27 @@ hr {
 .product-selected {
     background-color: bisque;
 }
+
+input {
+    margin-bottom: 1rem;
+    display: block;
+}
+
+textarea {
+    margin-bottom: 1rem;
+    display: block;
+}
+
+select {
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.validation-error {
+    color: red;
+
+}
+
+.invalid-value {
+    border-color: red;
+}

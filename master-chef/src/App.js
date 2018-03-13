@@ -5,7 +5,7 @@ import './App.css';
 
 class App extends Component {
 
-    constructor(){
+    constructor() {
         super();
 
         this.state = {
@@ -42,7 +42,7 @@ class App extends Component {
     }
 
     generateRandomId = () => {
-       return Math.random() *1000000000000000000;
+        return Math.random() * 1000000000000000000;
     };
 
     render() {
@@ -57,8 +57,3 @@ class App extends Component {
 }
 
 export default App;
-
-
-
-
-

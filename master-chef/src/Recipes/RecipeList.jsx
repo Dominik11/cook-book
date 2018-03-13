@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import messages from "../shared/messages";
+import {Form, Text} from 'react-form';
 
 class RecipeList extends Component {
 
@@ -8,8 +9,6 @@ class RecipeList extends Component {
         super(props);
 
         this.state = {
-            name: "",
-            description: "",
             ingredients: [],
             recipes: [],
             products: props.products
@@ -81,40 +80,34 @@ class RecipeList extends Component {
         )
     };
 
-    setRecipeName = (event) => {
-        const name = event.currentTarget.value;
-        this.setState({
-            name: name
-        });
-    };
+    addRecipe = (newRecipeFormValues, formApi) => {
+        if (this.state.ingredients.length < 1) {
+            this.setState({
+                anyIngredientSelectedError: messages.pl.recipes.validation.anyIngredientSelected
+            });
 
-    setDescription = (event) => {
-        const description = event.currentTarget.value;
-        this.setState({
-            description: description
-        });
-    };
+            return;
+        }
 
-    addRecipe = (event) => {
-        event.preventDefault();
         this.setState(state => ({
             recipes: [
                 ...state.recipes,
                 {
                     id: this.props.idGenerator(),
-                    name: state.name,
-                    description: state.description,
+                    name: newRecipeFormValues.name,
+                    description: newRecipeFormValues.description,
                     ingredients: state.ingredients
                 }
-            ]
+            ],
+            anyIngredientSelectedError: null
         }));
+
+        formApi.resetAll();
         this.clearForm();
     };
 
     clearForm = () => {
         this.setState(state => ({
-            name: "",
-            description: "",
             ingredients: [],
             products: state.products.map(product => ({
                     ...product,
@@ -124,38 +117,62 @@ class RecipeList extends Component {
         }));
     };
 
+    renderIngredientError = () => {
+        return this.state.anyIngredientSelectedError ?
+            <span className="validation-error">{this.state.anyIngredientSelectedError}</span> :
+            null;
+    };
+
     render() {
         const shouldRenderRecipeList = this.state.products.length > 0;
+        const validateNewRecipe = value => ({
+            error: !value ? messages.pl.validation.fieldNullOrEmpty : null
+        });
 
         return shouldRenderRecipeList ? (
             <div>
                 <ul>
                     {this.renderProductList(this.state.products)}
+                    {this.renderIngredientError()}
                 </ul>
-                <form onSubmit={this.addRecipe}>
-                    <label>
-                        {messages.pl.recipes.labels.newRecipe}:
-                        <br />
-                        <input
-                            type="text"
-                            value={this.state.name}
-                            onChange={this.setRecipeName}
-                            placeholder={messages.pl.recipes.labels.name}
-                        />
-                        <br />
-                        <input
-                            type="text"
-                            value={this.state.description}
-                            onChange={this.setDescription}
-                            placeholder={messages.pl.recipes.labels.description}
-                        />
-                    </label>
-                    <br />
-                    <input
-                        type="submit"
-                        value={messages.pl.recipes.labels.addNew}
-                    />
-                </form>
+
+                <Form
+                    onSubmit={(values, e, formApi) => this.addRecipe(values, formApi)}
+                    validateOnSubmit
+                >
+                    {formApi => (
+                        <form
+                            onSubmit={formApi.submitForm}
+                            id="newRecipeForm"
+                            className="mb-4"
+                        >
+                            <label htmlFor="recipeName">{messages.pl.recipes.labels.newRecipe}:</label>
+                            <Text
+                                field="name"
+                                id="name"
+                                validate={validateNewRecipe}
+                                className={formApi.errors && formApi.errors.name ? "invalid-value" : ""}
+                                placeholder={messages.pl.recipes.labels.name}
+                            />
+                            <div className="validation-error">{formApi.errors ? formApi.errors.name : null}</div>
+                            <Text
+                                field="description"
+                                id="description"
+                                validate={validateNewRecipe}
+                                className={formApi.errors && formApi.errors.description ? "invalid-value" : ""}
+                                placeholder={messages.pl.recipes.labels.description}
+                            />
+                            <div className="validation-error">{formApi.errors ? formApi.errors.description : null}</div>
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                            >
+                                {messages.pl.recipes.labels.addRecipe}
+                            </button>
+
+                        </form>
+                    )}
+                </Form>
                 <ul>
                     {this.renderRecipeList(this.state.recipes)}
                 </ul>

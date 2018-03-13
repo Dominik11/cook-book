@@ -1,5 +1,8 @@
 export default {
     pl: {
+        validation: {
+            fieldNullOrEmpty: "Pole nie może być puste!"
+        },
         products: {
             labels: {
                 newProduct: "Nowy produkt",
@@ -14,11 +17,14 @@ export default {
         recipes: {
             labels: {
                 emptyList: "Brak produktów, dodaj produkty w zakładce lista produktów",
-                addNew: "Dodaj nowy przepis",
+                addRecipe: "Dodaj nowy przepis",
                 newRecipe: "Nowy przepis",
                 description: "opis",
-                name: "nazwa przepisu",
+                name: "nazwa przepisu"
             },
+            validation: {
+                anyIngredientSelected: "Należy wybrać przynajmniej jeden składnik"
+            }
         },
     }
 };
