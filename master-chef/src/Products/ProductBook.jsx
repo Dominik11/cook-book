@@ -1,30 +1,15 @@
 import React, {Component} from 'react';
+import PropTypes from "prop-types";
 import ProductList from "./ProductList"
 import messages from "../shared/messages"
 
 class ProductBook extends Component {
-    constructor() {
-        super();
+
+    constructor(props) {
+        super(props);
 
         this.state = {
-            products: [
-                {
-                    name: "mleko",
-                    editMode: false
-                },
-                {
-                    name: "masło",
-                    editMode: false
-                },
-                {
-                    name: "jajko",
-                    editMode: false
-                },
-                {
-                    name: "sól",
-                    editMode: false
-                }
-            ],
+            products: props.products,
             newProductName: ""
         };
     }
@@ -39,25 +24,32 @@ class ProductBook extends Component {
     addProduct = (event) => {
         event.preventDefault();
         this.setState(state => ({
-            products: [...state.products, {
-                name: state.newProductName,
-                editMode: false
-            }],
+            products: [
+                ...state.products,
+                {
+                    id: this.props.idGenerator(),
+                    name: state.newProductName
+                }
+            ],
             newProductName: ""
         }));
     };
 
     removeProduct = (elementToRemove) => {
         this.setState(state => ({
-            products: state.products.filter(element => element !== elementToRemove)
+            products: state.products.filter(element => element.id !== elementToRemove.id)
         }));
     };
 
     switchProductEdition = (selectedProduct) => {
         this.setState(state => ({
             products: state.products.map(product => {
-                return product === selectedProduct ?
-                    {...product, editMode: !selectedProduct.editMode, newName: selectedProduct.name} :
+                return product.id === selectedProduct.id ?
+                    {
+                        ...product,
+                        editMode: !selectedProduct.editMode,
+                        newName: selectedProduct.name
+                    } :
                     product;
             })
         }));
@@ -66,8 +58,12 @@ class ProductBook extends Component {
     updateProduct = (productToUpdate) => {
         this.setState(state => ({
             products: state.products.map(product => {
-                return product === productToUpdate ?
-                    {...product, editMode: false, name: productToUpdate.newName} :
+                return product.id === productToUpdate.id ?
+                    {
+                        ...product,
+                        editMode: false,
+                        name: productToUpdate.newName
+                    } :
                     product;
             })
         }));
@@ -76,8 +72,11 @@ class ProductBook extends Component {
     setNewName = (productToSetName, newName) => {
         this.setState(state => ({
             products: state.products.map(product => {
-                return product === productToSetName ?
-                    {...product, newName: newName} :
+                return product.id === productToSetName.id ?
+                    {
+                        ...product,
+                        newName: newName
+                    } :
                     product;
             })
         }));
@@ -88,7 +87,7 @@ class ProductBook extends Component {
             <div>
                 <form onSubmit={this.addProduct}>
                     <label>
-                        Nowy produkt:
+                        {messages.pl.products.labels.newProduct}:
                         <input
                             type="text"
                             value={this.state.newProductName}
@@ -111,5 +110,10 @@ class ProductBook extends Component {
         );
     }
 }
+
+ProductBook.propTypes = {
+    products: PropTypes.array,
+    idGenerator: PropTypes.func
+};
 
 export default ProductBook;

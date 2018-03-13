@@ -61,16 +61,17 @@ class ProductList extends Component {
         ];
 
         return (
-            <div>
-                <li key={product.name}>{product.name}</li>
+            <div key={product.id}>
+                <li key={product.id}>{product.name}</li>
                 {this.renderButtons(buttonsConfig, product)}
             </div>
         )
     };
 
     renderButtons = (buttonsConfig, product) => {
-        return buttonsConfig.map(buttonConfig =>
+        return buttonsConfig.map((buttonConfig, index) =>
             <Button
+                key={index}
                 onButtonClick={() => buttonConfig.action(product)}
                 label={messages.pl.products.labels[buttonConfig.label]}
             />

@@ -8,7 +8,7 @@ function Button(props) {
             disabled={props.disabled}
             onClick={props.onButtonClick}
         >
-            {props.icon}{props.label}{props.children}
+            {props.icon}{props.label}
         </button>
     ) : null;
 }
