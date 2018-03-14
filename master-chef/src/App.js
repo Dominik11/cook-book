@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ProductBook from './Products/ProductBook';
 import RecipesCreator from './Recipes/RecipesCreator';
+import RecipesSearch from './ReciplesSearchEngine/RecipesSearch';
 import './App.css';
 
 class App extends Component {
@@ -11,30 +12,40 @@ class App extends Component {
         this.state = {
             products: [
                 {
-                    id: this.generateRandomId(),
+                    id: 1,
                     name: "mleko"
                 },
                 {
-                    id: this.generateRandomId(),
+                    id: 2,
                     name: "masło"
                 },
                 {
-                    id: this.generateRandomId(),
+                    id: 3,
                     name: "jajka"
                 },
                 {
-                    id: this.generateRandomId(),
+                    id: 4,
                     name: "sól"
                 }
             ],
             recipes: [
                 {
-                    name: "jajecznica",
+                    id: this.generateRandomId(),
+                    name: "Jajecznica",
                     description: "Roztopić masło na patelni następnie rozbic dwa jajka i dodać soli mieszać ok. 2 min.",
-                    ingredient: [
-                        "jajka",
-                        "sól",
-                        "masło"
+                    ingredients: [
+                        {
+                            id: 2,
+                            name: "masło",
+                        },
+                        {
+                            id: 3,
+                            name: "jajka",
+                        },
+                        {
+                            id: 4,
+                            name: "sól",
+                        }
                     ]
                 }
             ]
@@ -50,7 +61,10 @@ class App extends Component {
             <div>
                 <ProductBook products={this.state.products} idGenerator={this.generateRandomId}/>
                 <hr/>
-                <RecipesCreator products={this.state.products} idGenerator={this.generateRandomId}/>
+                <RecipesCreator products={this.state.products} recipes={this.state.recipes}
+                                idGenerator={this.generateRandomId}/>
+                <hr/>
+                <RecipesSearch products={this.state.products} recipes={this.state.recipes}/>
             </div>
         );
     }

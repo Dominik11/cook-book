@@ -5,22 +5,18 @@ import Button from "../shared/Button";
 
 class ProductList extends Component {
 
-    renderProductList = (products) => {
-        return products.map(this.renderProduct)
-    };
+    renderProductList = products => products.map(this.renderProduct);
+
+    renderProduct = product => product.editMode ?
+        this.renderEditedProductRow(product) :
+        this.renderProductRow(product);
 
     setNewName = (event, productToSetName) => {
         const newName = event.target.value;
         this.props.setNewName(productToSetName, newName);
     };
 
-    renderProduct = (product) => {
-        return product.editMode ?
-            this.renderEditedProductRow(product) :
-            this.renderProductRow(product);
-    };
-
-    renderEditedProductRow = (product) => {
+    renderEditedProductRow = product => {
         const buttonsConfig = [
             {
                 action: this.props.removeProduct,
@@ -44,13 +40,13 @@ class ProductList extends Component {
                     value={product.newName}
                     className={product.error ? "invalid-value" : ""}
                 />
-                {product.error ? <span class="validation-error">{product.error}</span> : null}
+                {product.error ? <span className="validation-error">{product.error}</span> : null}
                 {this.renderButtons(buttonsConfig, product)}
             </div>
         )
     };
 
-    renderProductRow = (product) => {
+    renderProductRow = product => {
         const buttonsConfig = [
             {
                 action: this.props.removeProduct,

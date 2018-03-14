@@ -16,11 +16,13 @@ export default {
         },
         recipes: {
             labels: {
-                emptyList: "Brak produktów, dodaj produkty w zakładce lista produktów",
+                emptyProductsList: "Brak produktów, dodaj produkty w zakładce lista produktów",
+                emptyRecipesList: "Brak przepisów",
                 addRecipe: "Dodaj nowy przepis",
                 newRecipe: "Nowy przepis",
                 description: "opis",
-                name: "nazwa przepisu"
+                name: "nazwa przepisu",
+                recipesNotFound: "Nie znaleziono przepisu na podstawie wprowadzonych składników"
             },
             validation: {
                 anyIngredientSelected: "Należy wybrać przynajmniej jeden składnik"
