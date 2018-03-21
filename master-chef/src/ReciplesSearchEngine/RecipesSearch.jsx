@@ -11,8 +11,45 @@ class RecipesSearch extends Component {
 
         this.state = {
             ingredients: [],
-            recipes: props.recipes,
-            products: props.products
+            recipes: [
+                {
+                    id: 1,
+                    name: "Jajecznica",
+                    description: "Roztopić masło na patelni następnie rozbic dwa jajka i dodać soli mieszać ok. 2 min.",
+                    ingredients: [
+                        {
+                            id: 2,
+                            name: "masło",
+                        },
+                        {
+                            id: 3,
+                            name: "jajka",
+                        },
+                        {
+                            id: 4,
+                            name: "sól",
+                        }
+                    ]
+                }
+            ],
+            products: [
+                {
+                    id: 1,
+                    name: "mleko"
+                },
+                {
+                    id: 2,
+                    name: "masło"
+                },
+                {
+                    id: 3,
+                    name: "jajka"
+                },
+                {
+                    id: 4,
+                    name: "sól"
+                }
+            ]
         };
     }
 
@@ -74,9 +111,5 @@ class RecipesSearch extends Component {
     }
 }
 
-RecipesSearch.propTypes = {
-    products: PropTypes.array,
-    recipes: PropTypes.array
-};
 
 export default RecipesSearch;

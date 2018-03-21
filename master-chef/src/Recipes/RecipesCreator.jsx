@@ -13,10 +13,52 @@ class RecipesCreator extends Component {
 
         this.state = {
             ingredients: [],
-            recipes: props.recipes,
-            products: props.products
+            recipes: [
+                {
+                    id: 1,
+                    name: "Jajecznica",
+                    description: "Roztopić masło na patelni następnie rozbic dwa jajka i dodać soli mieszać ok. 2 min.",
+                    ingredients: [
+                        {
+                            id: 2,
+                            name: "masło",
+                        },
+                        {
+                            id: 3,
+                            name: "jajka",
+                        },
+                        {
+                            id: 4,
+                            name: "sól",
+                        }
+                    ]
+                }
+            ],
+            products: [
+                {
+                    id: 1,
+                    name: "mleko"
+                },
+                {
+                    id: 2,
+                    name: "masło"
+                },
+                {
+                    id: 3,
+                    name: "jajka"
+                },
+                {
+                    id: 4,
+                    name: "sól"
+                }
+            ]
         }
     }
+
+    generateRandomId = () => {
+        return Math.random() * 1000000000000000000;
+    };
+
 
     selectProduct = selectedProduct => {
         this.setState(state => ({
@@ -62,7 +104,7 @@ class RecipesCreator extends Component {
             recipes: [
                 ...state.recipes,
                 {
-                    id: this.props.idGenerator(),
+                    id: this.generateRandomId(),
                     name: newRecipeFormValues.name,
                     description: newRecipeFormValues.description,
                     ingredients: state.ingredients
@@ -153,11 +195,5 @@ class RecipesCreator extends Component {
         )
     };
 }
-
-RecipesCreator.propTypes = {
-    recipes: PropTypes.array,
-    products: PropTypes.array,
-    idGenerator: PropTypes.func
-};
 
 export default RecipesCreator;

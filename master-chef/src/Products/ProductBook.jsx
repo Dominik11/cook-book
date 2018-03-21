@@ -12,16 +12,38 @@ class ProductBook extends Component {
         super(props);
 
         this.state = {
-            products: props.products
+            products: [
+                {
+                    id: 1,
+                    name: "mleko"
+                },
+                {
+                    id: 2,
+                    name: "masło"
+                },
+                {
+                    id: 3,
+                    name: "jajka"
+                },
+                {
+                    id: 4,
+                    name: "sól"
+                }
+            ]
         };
     }
+
+    generateRandomId = () => {
+        return Math.random() * 1000000000000000000;
+    };
+
 
     addProduct = newProductFormValues => {
         this.setState(state => ({
             products: [
                 ...state.products,
                 {
-                    id: this.props.idGenerator(),
+                    id: this.generateRandomId(),
                     name: newProductFormValues.newProductName
                 }
             ]
@@ -146,10 +168,5 @@ class ProductBook extends Component {
         );
     }
 }
-
-ProductBook.propTypes = {
-    products: PropTypes.array,
-    idGenerator: PropTypes.func
-};
 
 export default ProductBook;
