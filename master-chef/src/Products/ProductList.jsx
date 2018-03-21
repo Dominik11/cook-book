@@ -1,39 +1,79 @@
 import React, {Component} from 'react';
+import PropTypes from "prop-types";
+import messages from "../shared/messages";
+import Button from "../shared/Button";
 
 class ProductList extends Component {
 
-    constructor(props){
-        super(props)
-    }
+    renderProductList = products => products.map(this.renderProduct);
 
-    renderProductList = (products) => {
-        return products.map(this.renderProduct)
-    };
+    renderProduct = product => product.editMode ?
+        this.renderEditedProductRow(product) :
+        this.renderProductRow(product);
 
     setNewName = (event, productToSetName) => {
         const newName = event.target.value;
         this.props.setNewName(productToSetName, newName);
     };
 
-    renderProduct = (product) => {
-        return product.editMode ? (
+    renderEditedProductRow = product => {
+        const buttonsConfig = [
+            {
+                action: this.props.removeProduct,
+                label: "remove"
+            },
+            {
+                action: this.props.updateProduct,
+                label: "save"
+            },
+            {
+                action: this.props.switchProductEdition,
+                label: "cancel"
+            }
+        ];
+
+        return (
             <div>
                 <input
                     type="text"
                     onChange={(event) => this.setNewName(event, product)}
                     value={product.newName}
+                    className={product.error ? "invalid-value" : ""}
                 />
-                <button onClick={() => this.props.removeProduct(product)}>Usuń</button>
-                <button onClick={() => this.props.updateProduct(product)}>Zapisz</button>
-                <button onClick={() => this.props.switchProductEdition(product)}>Anuluj edycję</button>
-            </div>
-        ) : (
-            <div>
-                <li key={product.name}>{product.name}</li>
-                <button onClick={() => this.props.removeProduct(product)}>Usuń</button>
-                <button onClick={() => this.props.switchProductEdition(product)}>Edytuj</button>
+                {product.error ? <span className="validation-error">{product.error}</span> : null}
+                {this.renderButtons(buttonsConfig, product)}
             </div>
         )
+    };
+
+    renderProductRow = product => {
+        const buttonsConfig = [
+            {
+                action: this.props.removeProduct,
+                label: "remove"
+            },
+            {
+                action: this.props.switchProductEdition,
+                label: "edit"
+            }
+        ];
+
+        return (
+            <div key={product.id}>
+                <li key={product.id}>{product.name}</li>
+                {this.renderButtons(buttonsConfig, product)}
+            </div>
+        )
+    };
+
+    renderButtons = (buttonsConfig, product) => {
+        return buttonsConfig.map((buttonConfig, index) =>
+            <Button
+                key={index}
+                onButtonClick={() => buttonConfig.action(product)}
+                label={messages.pl.products.labels[buttonConfig.label]}
+            />
+        );
     };
 
     render() {
@@ -44,9 +84,17 @@ class ProductList extends Component {
                 {this.renderProductList(this.props.products)}
             </ul>
         ) : (
-            <p>Brak produktów</p>
+            <p>{messages.pl.products.labels.emptyList}</p>
         );
     }
 }
+
+ProductList.propTypes = {
+    products: PropTypes.array,
+    removeProduct: PropTypes.func,
+    switchProductEdition: PropTypes.func,
+    updateProduct: PropTypes.func,
+    setNewName: PropTypes.func
+};
 
 export default ProductList;

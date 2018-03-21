@@ -1,94 +1,162 @@
 import React, {Component} from 'react';
+import PropTypes from "prop-types";
+import isEmpty from "lodash/isEmpty";
+import get from "lodash/get";
+import {Form, Text} from 'react-form';
 import ProductList from "./ProductList"
+import messages from "../shared/messages"
 
 class ProductBook extends Component {
-    constructor() {
-        super();
+
+    constructor(props) {
+        super(props);
 
         this.state = {
             products: [
                 {
-                    name: "mleko",
-                    editMode: false,
-                    newName: ''
+                    id: 1,
+                    name: "mleko"
                 },
                 {
-                    name: "masło",
-                    editMode: false,
-                    newName: ''
+                    id: 2,
+                    name: "masło"
                 },
                 {
-                    name: "jajko",
-                    editMode: false,
-                    newName: ''
+                    id: 3,
+                    name: "jajka"
                 },
                 {
-                    name: "sól",
-                    editMode: false,
-                    newName: ''
+                    id: 4,
+                    name: "sól"
                 }
-            ],
-            newProduct: ""
+            ]
         };
     }
 
-    setNewProduct = (event) => {
-        const productName = event.currentTarget.value;
-        this.setState({
-            newProductName: productName
-        });
+    generateRandomId = () => {
+        return Math.random() * 1000000000000000000;
     };
 
-    addProduct = () => {
+
+    addProduct = newProductFormValues => {
         this.setState(state => ({
-            products: [...state.products, {
-                name: state.newProductName,
-                editMode: false
-            }]
+            products: [
+                ...state.products,
+                {
+                    id: this.generateRandomId(),
+                    name: newProductFormValues.newProductName
+                }
+            ]
         }));
     };
 
-    removeProduct = (elementToRemove) => {
+    removeProduct = elementToRemove => {
         this.setState(state => ({
-            products: state.products.filter(element => element !== elementToRemove)
+            products: state.products.filter(element => element.id !== elementToRemove.id)
         }));
     };
 
-    switchProductEdition = (selectedProduct) => {
+    switchProductEdition = selectedProduct => {
         this.setState(state => ({
-            products: state.products.map(product => {
-                return product === selectedProduct ?
-                    {...product, editMode: !selectedProduct.editMode} :
-                    product;
-            })
+            products: state.products.map(product =>
+                product.id === selectedProduct.id ?
+                    {
+                        ...product,
+                        editMode: !selectedProduct.editMode,
+                        newName: selectedProduct.name,
+                        error: null
+                    } :
+                    product
+            )
         }));
     };
 
-    updateProduct = (productToUpdate) => {
+    updateProduct = productToUpdate => {
+        if (isEmpty(productToUpdate.newName)) {
+            this.throwUpdateProductNameValidationError(productToUpdate);
+            return;
+        }
+
         this.setState(state => ({
-            products: state.products.map(product => {
-                return product === productToUpdate ?
-                    {...product, editMode: false, name: productToUpdate.newName} :
-                    product;
-            })
+            products: state.products.map(product =>
+                product.id === productToUpdate.id ?
+                    {
+                        ...product,
+                        editMode: false,
+                        name: productToUpdate.newName,
+                        error: null
+                    } :
+                    product
+            )
+        }));
+    };
+
+    throwUpdateProductNameValidationError = productToUpdate => {
+        this.setState(state => ({
+            products: state.products.map(product =>
+                product.id === productToUpdate.id ?
+                    {
+                        ...product,
+                        error: messages.pl.validation.fieldNullOrEmpty
+                    } :
+                    product
+            )
         }));
     };
 
     setNewName = (productToSetName, newName) => {
         this.setState(state => ({
-            products: state.products.map(product => {
-                return product === productToSetName ?
-                    {...product, newName: newName} :
-                    product;
-            })
+            products: state.products.map(product =>
+                product.id === productToSetName.id ?
+                    {
+                        ...product,
+                        newName: newName
+                    } :
+                    product
+            )
         }));
     };
 
     render() {
+        const validateNewProduct = value => ({
+            error: !value ? messages.pl.validation.fieldNullOrEmpty : null
+        });
+
         return (
             <div>
-                <input onChange={this.setNewProduct}/>
-                <button onClick={this.addProduct}>Dodaj produkt</button>
+                <Form
+                    onSubmit={(values, e, formApi) => {
+                        this.addProduct(values);
+                        formApi.resetAll();
+                    }}
+                    validateOnSubmit
+                >
+                    {formApi => (
+                        <form
+                            onSubmit={formApi.submitForm}
+                            id="newProductForm"
+                            className="mb-4"
+                        >
+                            <label htmlFor="newProductName">{messages.pl.products.labels.newProduct}:</label>
+                            <Text
+                                field="newProductName"
+                                id="newProductName"
+                                validate={validateNewProduct}
+                                className={get(formApi.errors, "newProductName", null) ? "invalid-value" : ""}
+                            />
+                            <div className="validation-error">
+                                {get(formApi.errors, "newProductName", null)}
+                            </div>
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                            >
+                                {messages.pl.products.labels.addProduct}
+                            </button>
+
+                        </form>
+                    )}
+                </Form>
                 <ProductList
                     products={this.state.products}
                     removeProduct={this.removeProduct}
