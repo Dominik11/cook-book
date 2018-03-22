@@ -5,6 +5,9 @@ import get from "lodash/get";
 import {Form, Text} from 'react-form';
 import ProductList from "./ProductList"
 import messages from "../shared/messages"
+import {connect} from "react-redux";
+import {generateRandomId} from "../shared/helper";
+import * as actions from "../shared/actions";
 
 class ProductBook extends Component {
 
@@ -12,42 +15,25 @@ class ProductBook extends Component {
         super(props);
 
         this.state = {
-            products: [
-                {
-                    id: 1,
-                    name: "mleko"
-                },
-                {
-                    id: 2,
-                    name: "masło"
-                },
-                {
-                    id: 3,
-                    name: "jajka"
-                },
-                {
-                    id: 4,
-                    name: "sól"
-                }
-            ]
+            products: this.props.products
         };
     }
 
-    generateRandomId = () => {
-        return Math.random() * 1000000000000000000;
-    };
-
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.products !== this.state.products) {
+            this.setState({
+                products: nextProps.products
+            })
+        }
+    }
 
     addProduct = newProductFormValues => {
-        this.setState(state => ({
-            products: [
-                ...state.products,
-                {
-                    id: this.generateRandomId(),
-                    name: newProductFormValues.newProductName
-                }
-            ]
-        }));
+        const newProduct =  {
+            id: generateRandomId(),
+            name: newProductFormValues.newProductName
+        };
+
+        this.props.addProduct(newProduct);
     };
 
     removeProduct = elementToRemove => {
@@ -89,6 +75,8 @@ class ProductBook extends Component {
                     product
             )
         }));
+
+        this.props.updateProduct()
     };
 
     throwUpdateProductNameValidationError = productToUpdate => {
@@ -169,4 +157,21 @@ class ProductBook extends Component {
     }
 }
 
-export default ProductBook;
+ProductBook.propTypes = {
+    products: PropTypes.array.isRequired,
+    addProduct: PropTypes.func,
+};
+
+const mapStateToProps = (state) => {
+    return {
+        products: state.products
+    };
+};
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addProduct: newProduct => dispatch(actions.addProduct(newProduct)),
+        updateProduct: product => dispatch(actions.updateProduct(product))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProductBook);
