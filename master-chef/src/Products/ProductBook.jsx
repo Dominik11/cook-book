@@ -36,10 +36,8 @@ class ProductBook extends Component {
         this.props.addProduct(newProduct);
     };
 
-    removeProduct = elementToRemove => {
-        this.setState(state => ({
-            products: state.products.filter(element => element.id !== elementToRemove.id)
-        }));
+    removeProduct = productToRemove => {
+        this.props.removeProduct(productToRemove);
     };
 
     switchProductEdition = selectedProduct => {
@@ -63,20 +61,7 @@ class ProductBook extends Component {
             return;
         }
 
-        this.setState(state => ({
-            products: state.products.map(product =>
-                product.id === productToUpdate.id ?
-                    {
-                        ...product,
-                        editMode: false,
-                        name: productToUpdate.newName,
-                        error: null
-                    } :
-                    product
-            )
-        }));
-
-        this.props.updateProduct()
+        this.props.updateProduct(productToUpdate);
     };
 
     throwUpdateProductNameValidationError = productToUpdate => {
@@ -158,8 +143,7 @@ class ProductBook extends Component {
 }
 
 ProductBook.propTypes = {
-    products: PropTypes.array.isRequired,
-    addProduct: PropTypes.func,
+    products: PropTypes.array.isRequired
 };
 
 const mapStateToProps = (state) => {
@@ -170,7 +154,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         addProduct: newProduct => dispatch(actions.addProduct(newProduct)),
-        updateProduct: product => dispatch(actions.updateProduct(product))
+        updateProduct: product => dispatch(actions.updateProduct(product)),
+        removeProduct: product => dispatch(actions.removeProduct(product))
     }
 };
 

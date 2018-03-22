@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import {connect} from "react-redux";
 import SelectProductList from "../shared/SelectProductList"
 import RecipeList from "../shared/RecipeList"
 import messages from "../shared/messages"
@@ -10,7 +11,9 @@ class RecipesSearch extends Component {
         super(props);
 
         this.state = {
-            ingredients: []
+            ingredients: [],
+            products: this.props.products,
+            recipes: this.props.recipes
         };
     }
 
@@ -45,11 +48,14 @@ class RecipesSearch extends Component {
     };
 
     filteredRecipes = () => {
-        const userIngredientsIds = this.state.ingredients.map(ingredient => ingredient.id);
+        const userIngredientsIds = this.state.ingredients.map(
+            ingredient => ingredient.id
+        );
 
         return this.state.recipes.filter(recipe => {
-            const missingIngredients = recipe.ingredients
-                .filter(ingredient => !userIngredientsIds.includes(ingredient.id));
+            const missingIngredients = recipe.ingredients.filter(
+                ingredient => !userIngredientsIds.includes(ingredient.id)
+            );
 
             return missingIngredients.length === 0;
         })
@@ -73,4 +79,16 @@ class RecipesSearch extends Component {
 }
 
 
-export default RecipesSearch;
+RecipesSearch.propTypes = {
+    recipes: PropTypes.array.isRequired,
+    products: PropTypes.array.isRequired
+};
+
+const mapStateToProps = (state) => {
+    return {
+        recipes: state.recipes,
+        products: state.products
+    };
+};
+
+export default connect(mapStateToProps, null)(RecipesSearch);

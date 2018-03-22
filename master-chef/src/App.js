@@ -1,34 +1,61 @@
-import React, {Component} from 'react';
+import React, {Component} from "react";
 import {
     BrowserRouter as Router,
     Route,
     Link
-} from 'react-router-dom';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-import ProductBook from './Products/ProductBook';
-import RecipesCreator from './Recipes/RecipesCreator';
-import RecipesSearch from './ReciplesSearchEngine/RecipesSearch';
-import './App.css';
+} from "react-router-dom";
+import { createStore } from "redux";
+import { Provider } from "react-redux";
+import ProductBook from "./Products/ProductBook";
+import RecipesCreator from "./Recipes/RecipesCreator";
+import RecipesSearch from "./ReciplesSearchEngine/RecipesSearch";
+import "./App.css";
 
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'ADD_PRODUCT':
-            console.log("ADD_PRODUCT");
+        case "ADD_PRODUCT": {
             return {
                 ...state,
                 products: [...state.products, action.newProduct]
             };
-        case 'ADD_RECIPE':
-            console.log("ADD_RECIPE");
-            return { ...state, counter: state.counter - 1 };
+        }
+        case "UPDATE_PRODUCT": {
+            const productToUpdate = action.product;
+            const products = state.products.map(product =>
+                product.id === productToUpdate.id ?
+                    {
+                        ...product,
+                        name: productToUpdate.newName
+                    } :
+                    product
+            );
+
+            return {
+                ...state,
+                products: products
+            };
+        }
+        case "REMOVE_PRODUCT": {
+            const productToRemove = action.product;
+            const products = state.products.filter(element => element.id !== productToRemove.id);
+
+            return {
+                ...state,
+                products: products
+            };
+        }
+        case "ADD_RECIPE": {
+            return {
+                ...state,
+                recipes: [...state.recipes, action.newRecipe]
+            };
+        }
         default:
             return state;
     }
 };
 
 const initialStore = {
-    counter: 0,
     recipes: [
         {
             id: 1,

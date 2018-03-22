@@ -1,6 +1,7 @@
 const ADD_PRODUCT = "ADD_PRODUCT";
 const UPDATE_PRODUCT = "UPDATE_PRODUCT";
 const ADD_RECIPE = "ADD_RECIPE";
+const REMOVE_PRODUCT = "REMOVE_PRODUCT";
 
 export function addProduct(newProduct) {
     return {
@@ -12,6 +13,13 @@ export function addProduct(newProduct) {
 export function updateProduct(product) {
     return {
         type: UPDATE_PRODUCT,
+        product
+    }
+}
+
+export function removeProduct(product) {
+    return {
+        type: REMOVE_PRODUCT,
         product
     }
 }

@@ -7,6 +7,7 @@ import RecipeList from "../shared/RecipeList";
 import SelectProductList from "../shared/SelectProductList";
 import {generateRandomId} from "../shared/helper"
 import {connect} from "react-redux";
+import * as actions from "../shared/actions";
 
 class RecipesCreator extends Component {
 
@@ -17,6 +18,14 @@ class RecipesCreator extends Component {
             ingredients: [],
             products: this.props.products,
             recipes: this.props.recipes
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.recipes !== this.state.recipes) {
+            this.setState({
+                recipes: nextProps.recipes
+            })
         }
     }
 
@@ -60,19 +69,17 @@ class RecipesCreator extends Component {
             return;
         }
 
-        this.setState(state => ({
-            recipes: [
-                ...state.recipes,
-                {
-                    id: generateRandomId(),
-                    name: newRecipeFormValues.name,
-                    description: newRecipeFormValues.description,
-                    ingredients: state.ingredients
-                }
-            ],
-            anyIngredientSelectedError: null
-        }));
+        const newRecipe =  {
+            id: generateRandomId(),
+            name: newRecipeFormValues.name,
+            description: newRecipeFormValues.description,
+            ingredients: this.state.ingredients
+        };
+        this.props.addRecipeToStore(newRecipe);
 
+        this.setState({
+            anyIngredientSelectedError: null
+        });
         formApi.resetAll();
         this.clearForm();
     };
@@ -170,7 +177,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
     return {
-        addRecipeToStore: () => dispatch({ type: 'ADD_RECIPE' })
+        addRecipeToStore: (newRecipe) => dispatch(actions.addRecipe(newRecipe))
     }
 };
 
