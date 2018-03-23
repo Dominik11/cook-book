@@ -28,5 +28,10 @@ export default {
                 anyIngredientSelected: "Należy wybrać przynajmniej jeden składnik"
             }
         },
+        modal: {
+            cancel: "Anuluj",
+            submit: "Zatwierdź",
+            content: "Usunięcie produku spowoduje również usunięcie powiązanych z nim przepisów, czy jesteś pewny?"
+        }
     }
 };

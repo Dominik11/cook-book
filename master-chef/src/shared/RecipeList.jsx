@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
+import {getProductName} from "../shared/helper";
 
 class RecipeList extends Component {
 
@@ -18,11 +19,11 @@ class RecipeList extends Component {
                 {recipe.name}|
                 {recipe.description}|
                 [
-                {recipe.ingredients.map(i =>
-                    <span key={i.id}>
-                            {i.name},
+                    {recipe.ingredients.map(productId =>
+                        <span key={productId}>
+                            {getProductName(this.props.products, productId)},
                         </span>
-                )}
+                    )}
                 ]
             </li>
         )
@@ -39,11 +40,13 @@ class RecipeList extends Component {
 
 RecipeList.propTypes = {
     recipes: PropTypes.array,
+    products: PropTypes.array,
     recipesEmptyListMessage: PropTypes.string
 };
 
 RecipeList.defaultProps = {
-    recipes: []
+    recipes: [],
+    products: [],
 };
 
 export default RecipeList;

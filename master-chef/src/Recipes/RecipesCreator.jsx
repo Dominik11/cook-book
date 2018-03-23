@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import get from "lodash/get";
 import messages from "../shared/messages";
-import {Form, Text} from "react-form";
+import {Form, Text, TextArea} from "react-form";
 import RecipeList from "../shared/RecipeList";
 import SelectProductList from "../shared/SelectProductList";
 import {generateRandomId} from "../shared/helper"
@@ -33,7 +33,7 @@ class RecipesCreator extends Component {
         this.setState(state => ({
             ingredients: [
                 ...state.ingredients,
-                selectedProduct
+                selectedProduct.id
             ],
         }));
         this.switchProductSelection(selectedProduct);
@@ -136,7 +136,7 @@ class RecipesCreator extends Component {
                                 placeholder={messages.pl.recipes.labels.name}
                             />
                             <div className="validation-error">{get(formApi.errors, "name", null)}</div>
-                            <Text
+                            <TextArea
                                 field="description"
                                 id="description"
                                 validate={validateNewRecipe}
@@ -156,6 +156,7 @@ class RecipesCreator extends Component {
                 </Form>
                 <RecipeList
                     recipes={this.state.recipes}
+                    products={this.props.products}
                     recipesEmptyListMessage={messages.pl.recipes.labels.emptyRecipesList}
                 />
             </div>

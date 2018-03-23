@@ -33,7 +33,7 @@ class ProductList extends Component {
         ];
 
         return (
-            <div>
+            <div key={product.id}>
                 <input
                     type="text"
                     onChange={(event) => this.setNewName(event, product)}

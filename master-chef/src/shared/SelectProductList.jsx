@@ -8,9 +8,7 @@ class SelectProductList extends Component {
         super(props);
 
         this.state = {
-            products: props.products,
-            selectProduct: props.selectProduct,
-            deselectProduct: props.deselectProduct
+            products: props.products
         };
     }
 
@@ -37,12 +35,20 @@ class SelectProductList extends Component {
             <div
                 key={product.id}
                 className={`product-node ${additionalClass}`}
-                onClick={() => product.selected ? this.state.deselectProduct(product) : this.state.selectProduct(product)}
+                onClick={() => this.switchProductSelection(product)}
             >
                 {product.name}
                 {product.selected}
             </div>
         )
+    };
+
+    switchProductSelection = (product) => {
+        if (product.selected) {
+            this.props.deselectProduct(product);
+        } else {
+            this.props.selectProduct(product);
+        }
     };
 
     render() {

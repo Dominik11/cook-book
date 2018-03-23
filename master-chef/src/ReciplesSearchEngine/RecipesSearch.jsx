@@ -34,7 +34,7 @@ class RecipesSearch extends Component {
         this.setState(prevState => ({
             ingredients: [
                 ...prevState.ingredients,
-                selectedProduct
+                selectedProduct.id
             ],
         }));
         this.switchProductSelection(selectedProduct);
@@ -42,19 +42,17 @@ class RecipesSearch extends Component {
 
     deselectProduct = productToDeselect => {
         this.setState(prevState => ({
-            ingredients: prevState.ingredients.filter(product => product.id !== productToDeselect.id)
+            ingredients: prevState.ingredients.filter(productId => productId !== productToDeselect.id)
         }));
         this.switchProductSelection(productToDeselect);
     };
 
     filteredRecipes = () => {
-        const userIngredientsIds = this.state.ingredients.map(
-            ingredient => ingredient.id
-        );
+        const userIngredientsIds = this.state.ingredients;
 
         return this.state.recipes.filter(recipe => {
             const missingIngredients = recipe.ingredients.filter(
-                ingredient => !userIngredientsIds.includes(ingredient.id)
+                ingredientId => !userIngredientsIds.includes(ingredientId)
             );
 
             return missingIngredients.length === 0;
@@ -71,6 +69,7 @@ class RecipesSearch extends Component {
                 />
                 <RecipeList
                     recipes={this.filteredRecipes()}
+                    products={this.props.products}
                     recipesEmptyListMessage={messages.pl.recipes.labels.recipesNotFound}
                 />
             </div>

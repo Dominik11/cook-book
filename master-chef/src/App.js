@@ -44,10 +44,20 @@ const reducer = (state, action) => {
                 products: products
             };
         }
+
         case "ADD_RECIPE": {
             return {
                 ...state,
                 recipes: [...state.recipes, action.newRecipe]
+            };
+        }
+        case "REMOVE_RECIPE": {
+            const productId = action.productId;
+            const recipes = state.recipes.filter(recipe => !recipe.ingredients.includes(productId));
+
+            return {
+                ...state,
+                recipes: recipes
             };
         }
         default:
@@ -62,18 +72,9 @@ const initialStore = {
             name: "Jajecznica",
             description: "Roztopić masło na patelni następnie rozbic dwa jajka i dodać soli mieszać ok. 2 min.",
             ingredients: [
-                {
-                    id: 2,
-                    name: "masło",
-                },
-                {
-                    id: 3,
-                    name: "jajka",
-                },
-                {
-                    id: 4,
-                    name: "sól",
-                }
+                2,
+                3,
+                4
             ]
         }
     ],
