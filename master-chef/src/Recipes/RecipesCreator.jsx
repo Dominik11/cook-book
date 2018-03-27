@@ -7,7 +7,7 @@ import RecipeList from "../shared/RecipeList";
 import SelectProductList from "../shared/SelectProductList";
 import {generateRandomId} from "../shared/helper"
 import {connect} from "react-redux";
-import * as actions from "../shared/actions";
+import * as actions from "./actions";
 
 class RecipesCreator extends Component {
 
@@ -17,7 +17,8 @@ class RecipesCreator extends Component {
         this.state = {
             ingredients: [],
             products: this.props.products,
-            recipes: this.props.recipes
+            recipes: this.props.recipes,
+            resetSelectForm: false
         }
     }
 
@@ -29,36 +30,11 @@ class RecipesCreator extends Component {
         }
     }
 
-    selectProduct = selectedProduct => {
-        this.setState(state => ({
-            ingredients: [
-                ...state.ingredients,
-                selectedProduct.id
-            ],
-        }));
-        this.switchProductSelection(selectedProduct);
+    setSelectedIngredients = ingredients => {
+        this.setState({
+            ingredients: ingredients
+        })
     };
-
-    deselectProduct = productToDeselect => {
-        this.setState(state => ({
-            ingredients: state.ingredients.filter(product => product.id !== productToDeselect.id)
-        }));
-        this.switchProductSelection(productToDeselect);
-    };
-
-    switchProductSelection = selectedProduct => {
-        this.setState(state => ({
-            products: state.products.map(product =>
-                product.id === selectedProduct.id ?
-                    {
-                        ...product,
-                        selected: !selectedProduct.selected
-                    } :
-                    product
-            )
-        }));
-    };
-
 
     addRecipe = (newRecipeFormValues, formApi) => {
         if (this.state.ingredients.length < 1) {
@@ -69,29 +45,27 @@ class RecipesCreator extends Component {
             return;
         }
 
-        const newRecipe =  {
+        this.props.addRecipeToStore({
             id: generateRandomId(),
             name: newRecipeFormValues.name,
             description: newRecipeFormValues.description,
             ingredients: this.state.ingredients
-        };
-        this.props.addRecipeToStore(newRecipe);
-
-        this.setState({
-            anyIngredientSelectedError: null
         });
+
         formApi.resetAll();
         this.clearForm();
     };
 
     clearForm = () => {
         this.setState(state => ({
+            anyIngredientSelectedError: null,
             ingredients: [],
             products: state.products.map(product => ({
                     ...product,
                     selected: false
                 })
-            )
+            ),
+            resetSelectForm: !state.resetSelectForm
         }));
     };
 
@@ -101,7 +75,6 @@ class RecipesCreator extends Component {
             null;
     };
 
-
     render() {
         const validateNewRecipe = value => ({
             error: !value ? messages.pl.validation.fieldNullOrEmpty : null
@@ -109,14 +82,12 @@ class RecipesCreator extends Component {
 
         return (
             <div>
-                <ul>
-                    <SelectProductList
-                        products={this.state.products}
-                        selectProduct={this.selectProduct}
-                        deselectProduct={this.deselectProduct}
-                    />
-                    {this.renderIngredientsError()}
-                </ul>
+                <SelectProductList
+                    products={this.state.products}
+                    setSelectedIngredients={this.setSelectedIngredients}
+                    resetSelectForm={this.state.resetSelectForm}
+                />
+                {this.renderIngredientsError()}
                 <Form
                     onSubmit={(values, e, formApi) => this.addRecipe(values, formApi)}
                     validateOnSubmit
@@ -150,7 +121,6 @@ class RecipesCreator extends Component {
                             >
                                 {messages.pl.recipes.labels.addRecipe}
                             </button>
-
                         </form>
                     )}
                 </Form>
@@ -158,6 +128,9 @@ class RecipesCreator extends Component {
                     recipes={this.state.recipes}
                     products={this.props.products}
                     recipesEmptyListMessage={messages.pl.recipes.labels.emptyRecipesList}
+                    removeRecipe={this.props.removeRecipeToStore}
+                    showEditionActions
+                    updateRecipe={this.props.updateRecipe}
                 />
             </div>
         )
@@ -165,9 +138,15 @@ class RecipesCreator extends Component {
 }
 
 RecipesCreator.propTypes = {
-    products: PropTypes.array.isRequired,
-    recipes: PropTypes.array.isRequired,
+    products: PropTypes.array,
+    recipes: PropTypes.array,
     addRecipeToStore: PropTypes.func,
+    removeRecipeToStore: PropTypes.func
+};
+
+RecipesCreator.defaultProps = {
+    products: [],
+    recipes: []
 };
 
 const mapStateToProps = (state) => {
@@ -176,9 +155,11 @@ const mapStateToProps = (state) => {
         recipes: state.recipes
     };
 };
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
-        addRecipeToStore: (newRecipe) => dispatch(actions.addRecipe(newRecipe))
+        addRecipeToStore: newRecipe => dispatch(actions.addRecipe(newRecipe)),
+        removeRecipeToStore: recipe => dispatch(actions.removeRecipeById(recipe.id)),
+        updateRecipe: recipe => dispatch(actions.updateRecipe(recipe))
     }
 };
 

@@ -19,7 +19,11 @@ export default {
                 emptyProductsList: "Brak produktów, dodaj produkty w zakładce lista produktów",
                 emptyRecipesList: "Brak przepisów",
                 addRecipe: "Dodaj nowy przepis",
+                removeRecipe: "Usuń",
                 newRecipe: "Nowy przepis",
+                save: "Zapisz",
+                cancel: "Anuluj",
+                edit: "Edytuj",
                 description: "opis",
                 name: "nazwa przepisu",
                 recipesNotFound: "Nie znaleziono przepisu na podstawie wprowadzonych składników"
@@ -28,10 +32,17 @@ export default {
                 anyIngredientSelected: "Należy wybrać przynajmniej jeden składnik"
             }
         },
-        modal: {
-            cancel: "Anuluj",
-            submit: "Zatwierdź",
-            content: "Usunięcie produku spowoduje również usunięcie powiązanych z nim przepisów, czy jesteś pewny?"
-        }
+        modals: {
+            removeProduct: {
+                cancel: "Anuluj",
+                submit: "Zatwierdź",
+                content: "Usunięcie produku spowoduje również usunięcie powiązanych z nim przepisów, czy jesteś pewny?"
+            },
+            recipeEdition: {
+                cancel: "Anuluj",
+                submit: "Zatwierdź",
+                content: "Edycja przepisu",
+            }
+        },
     }
 };

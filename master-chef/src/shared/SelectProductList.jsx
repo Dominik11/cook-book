@@ -8,17 +8,75 @@ class SelectProductList extends Component {
         super(props);
 
         this.state = {
-            products: props.products
+            products: props.products,
+            ingredients: props.initialIngredients
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.products !== this.state.products) {
+        if (nextProps.resetSelectForm !== this.props.resetSelectForm) {
             this.setState({
-                products: nextProps.products
+                products: this.props.products,
+                ingredients: []
             })
         }
     }
+
+    onProductSelection = (product) => {
+        if (product.selected) {
+            this.deselectProduct(product);
+        } else {
+            this.selectProduct(product);
+        }
+    };
+
+    selectProduct = selectedProduct => {
+        this.setState(prevState => ({
+            ingredients: [
+                ...prevState.ingredients,
+                selectedProduct.id
+            ]
+        }), () => {
+            this.props.setSelectedIngredients(this.state.ingredients)
+        });
+        this.switchProductSelection(selectedProduct);
+    };
+
+    deselectProduct = productToDeselect => {
+        this.setState(prevState => ({
+            ingredients: prevState.ingredients.filter(productId => productId !== productToDeselect.id)
+        }), () => {
+            this.props.setSelectedIngredients(this.state.ingredients)
+        });
+        this.switchProductSelection(productToDeselect);
+    };
+
+    switchProductSelection = selectedProduct => {
+        this.setState(prevState => ({
+            products: prevState.products.map(product =>
+                product.id === selectedProduct.id ? {
+                    ...product,
+                    selected: !selectedProduct.selected
+                } : product
+            )
+        }));
+    };
+
+    filterProducts = (event) => {
+        const phrase = event.currentTarget.value;
+        const filteredProducts = this.state.products.map(product => {
+            const shouldHideProduct = !product.name.toLowerCase().includes(phrase.toLowerCase());
+
+            return {
+                ...product,
+                hidden: shouldHideProduct
+            }
+        });
+
+        this.setState({
+            products: filteredProducts
+        })
+    };
 
     renderProductList = () => {
         const shouldRenderProductsList = this.state.products.length > 0;
@@ -30,30 +88,24 @@ class SelectProductList extends Component {
 
     renderProduct = product => {
         const additionalClass = product.selected ? "product-selected" : "";
+        const showProduct = !product.hidden;
 
-        return (
+        return showProduct ? (
             <div
                 key={product.id}
                 className={`product-node ${additionalClass}`}
-                onClick={() => this.switchProductSelection(product)}
+                onClick={() => this.onProductSelection(product)}
             >
                 {product.name}
                 {product.selected}
             </div>
-        )
-    };
-
-    switchProductSelection = (product) => {
-        if (product.selected) {
-            this.props.deselectProduct(product);
-        } else {
-            this.props.selectProduct(product);
-        }
+        ) : null;
     };
 
     render() {
         return (
             <div>
+                <input onInput={this.filterProducts}/>
                 {this.renderProductList()}
             </div>
         )
@@ -62,8 +114,13 @@ class SelectProductList extends Component {
 
 SelectProductList.propTypes = {
     products: PropTypes.array.isRequired,
-    selectProduct: PropTypes.func,
-    deselectProduct: PropTypes.func
+    setSelectedIds: PropTypes.func,
+    resetSelectForm: PropTypes.bool,
+    initialIngredients: PropTypes.array
+};
+
+SelectProductList.defaultProps = {
+    initialIngredients: []
 };
 
 export default SelectProductList;

@@ -5,16 +5,53 @@ import Button from "../shared/Button";
 
 class ProductList extends Component {
 
-    renderProductList = products => products.map(this.renderProduct);
+    constructor(props) {
+        super(props);
 
-    renderProduct = product => product.editMode ?
-        this.renderEditedProductRow(product) :
-        this.renderProductRow(product);
+        this.state ={
+            products: this.props.products,
+            phrase: null
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.products !== this.state.products) {
+            this.setState({
+                products: nextProps.products
+            })
+        }
+    };
+
+    setPhrase = (event) => {
+        const phrase = event.currentTarget.value;
+
+        this.setState({
+            phrase: phrase
+        })
+    };
 
     setNewName = (event, productToSetName) => {
         const newName = event.target.value;
         this.props.setNewName(productToSetName, newName);
     };
+
+    renderProductList = products => {
+        const phrase = this.state.phrase;
+
+        if (phrase) {
+            const filteredProducts = products.filter(
+                product => product.name.toLowerCase().includes(phrase.toLowerCase())
+            );
+
+            return filteredProducts.map(this.renderProduct);
+        } else {
+            return products.map(this.renderProduct);
+        }
+    };
+
+    renderProduct = product => product.editMode ?
+        this.renderEditedProductRow(product) :
+        this.renderProductRow(product);
 
     renderEditedProductRow = product => {
         const buttonsConfig = [
@@ -80,9 +117,12 @@ class ProductList extends Component {
         const shouldRenderProductList = this.props.products.length > 0;
 
         return shouldRenderProductList ? (
-            <ul>
-                {this.renderProductList(this.props.products)}
-            </ul>
+            <div>
+                <input onInput={this.setPhrase} />
+                <ul>
+                    {this.renderProductList(this.state.products)}
+                </ul>
+            </div>
         ) : (
             <p>{messages.pl.products.labels.emptyList}</p>
         );

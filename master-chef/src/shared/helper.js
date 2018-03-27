@@ -6,7 +6,7 @@ export function generateRandomId() {
 
 export function getProductName(products = [], productId) {
     if (!productId) {
-        throw "wrong productId";
+        return;
     }
     const product = products.find(product => product.id === productId);
 

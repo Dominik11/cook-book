@@ -4,101 +4,22 @@ import {
     Route,
     Link
 } from "react-router-dom";
-import { createStore } from "redux";
-import { Provider } from "react-redux";
+import {combineReducers, createStore} from "redux";
+import {Provider} from "react-redux";
 import ProductBook from "./Products/ProductBook";
 import RecipesCreator from "./Recipes/RecipesCreator";
 import RecipesSearch from "./ReciplesSearchEngine/RecipesSearch";
+import products from './Products/reducers';
+import recipes from './Recipes/reducers';
 import "./App.css";
+import {initialState} from "./shared/constants"
 
-const reducer = (state, action) => {
-    switch (action.type) {
-        case "ADD_PRODUCT": {
-            return {
-                ...state,
-                products: [...state.products, action.newProduct]
-            };
-        }
-        case "UPDATE_PRODUCT": {
-            const productToUpdate = action.product;
-            const products = state.products.map(product =>
-                product.id === productToUpdate.id ?
-                    {
-                        ...product,
-                        name: productToUpdate.newName
-                    } :
-                    product
-            );
+const reducers = combineReducers({
+    products,
+    recipes
+});
 
-            return {
-                ...state,
-                products: products
-            };
-        }
-        case "REMOVE_PRODUCT": {
-            const productToRemove = action.product;
-            const products = state.products.filter(element => element.id !== productToRemove.id);
-
-            return {
-                ...state,
-                products: products
-            };
-        }
-
-        case "ADD_RECIPE": {
-            return {
-                ...state,
-                recipes: [...state.recipes, action.newRecipe]
-            };
-        }
-        case "REMOVE_RECIPE": {
-            const productId = action.productId;
-            const recipes = state.recipes.filter(recipe => !recipe.ingredients.includes(productId));
-
-            return {
-                ...state,
-                recipes: recipes
-            };
-        }
-        default:
-            return state;
-    }
-};
-
-const initialStore = {
-    recipes: [
-        {
-            id: 1,
-            name: "Jajecznica",
-            description: "Roztopić masło na patelni następnie rozbic dwa jajka i dodać soli mieszać ok. 2 min.",
-            ingredients: [
-                2,
-                3,
-                4
-            ]
-        }
-    ],
-    products: [
-        {
-            id: 1,
-            name: "mleko"
-        },
-        {
-            id: 2,
-            name: "masło"
-        },
-        {
-            id: 3,
-            name: "jajka"
-        },
-        {
-            id: 4,
-            name: "sól"
-        }
-    ]
-};
-
-const store = createStore(reducer, initialStore);
+const store = createStore(reducers, initialState);
 
 class App extends Component {
 
@@ -118,9 +39,9 @@ class App extends Component {
                                 <Link to="/search">Wyszukiwarka</Link>
                             </li>
                         </ul>
-                        <Route exact path="/" component={ProductBook} />
-                        <Route path="/recipes" component={RecipesCreator} />
-                        <Route path="/search" component={RecipesSearch} />
+                        <Route exact path="/" component={ProductBook}/>
+                        <Route path="/recipes" component={RecipesCreator}/>
+                        <Route path="/search" component={RecipesSearch}/>
                     </div>
                 </Router>
             </Provider>

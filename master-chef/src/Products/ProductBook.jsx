@@ -8,16 +8,16 @@ import get from "lodash/get";
 import ProductList from "./ProductList"
 import messages from "../shared/messages"
 import {generateRandomId} from "../shared/helper";
-import * as actions from "../shared/actions";
+import * as actions from "./actions";
 
 const customStyles = {
-    content : {
-        top                   : '50%',
-        left                  : '50%',
-        right                 : 'auto',
-        bottom                : 'auto',
-        marginRight           : '-50%',
-        transform             : 'translate(-50%, -50%)'
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)'
     }
 };
 
@@ -47,17 +47,12 @@ class ProductBook extends Component {
         });
     };
 
-    afterOpenModal = () => {
-        // references are now sync'd and can be accessed.
-        this.subtitle.style.color = '#f00';
-    };
-
     closeModal = () => {
         this.setState({modalIsOpen: false});
     };
 
     addProduct = newProductFormValues => {
-        const newProduct =  {
+        const newProduct = {
             id: generateRandomId(),
             name: newProductFormValues.newProductName
         };
@@ -88,7 +83,7 @@ class ProductBook extends Component {
 
     removeProductAndRelatedRecipes = (productToRemove) => {
         this.props.removeProduct(productToRemove);
-        this.props.removeRecipes(productToRemove.id);
+        this.props.removeRecipesByProductId(productToRemove.id);
     };
 
     switchProductEdition = selectedProduct => {
@@ -150,14 +145,14 @@ class ProductBook extends Component {
             <div>
                 <Modal
                     isOpen={this.state.modalIsOpen}
-                    onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     style={customStyles}
-                    contentLabel="Example Modal"
                 >
-                    <h2 ref={subtitle => this.subtitle = subtitle}>{messages.pl.modal.content}</h2>
-                    <button onClick={this.closeModal}>{messages.pl.modal.cancel}</button>
-                    <button onClick={() => this.removeProduct(this.state.productToRemove)}>{messages.pl.modal.submit}</button>
+                    <h2>{messages.pl.modals.removeProduct.content}</h2>
+                    <button onClick={this.closeModal}>{messages.pl.modals.removeProduct.cancel}</button>
+                    <button onClick={() => this.removeProduct(this.state.productToRemove)}>
+                        {messages.pl.modals.removeProduct.submit}
+                    </button>
                 </Modal>
                 <Form
                     onSubmit={(values, e, formApi) => {
@@ -205,26 +200,31 @@ class ProductBook extends Component {
 }
 
 ProductBook.propTypes = {
-    products: PropTypes.array.isRequired,
-    recipes: PropTypes.array.isRequired,
+    products: PropTypes.array,
+    recipes: PropTypes.array,
     addProduct: PropTypes.func,
     updateProduct: PropTypes.func,
     removeProduct: PropTypes.func,
-    removeRecipes: PropTypes.func,
+    removeRecipesByProductId: PropTypes.func,
 };
 
-const mapStateToProps = (state) => {
+ProductBook.defaultProps = {
+    products: [],
+    recipes: []
+};
+
+const mapStateToProps = state => {
     return {
         products: state.products,
         recipes: state.recipes,
     };
 };
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         addProduct: newProduct => dispatch(actions.addProduct(newProduct)),
         updateProduct: product => dispatch(actions.updateProduct(product)),
         removeProduct: product => dispatch(actions.removeProduct(product)),
-        removeRecipes: productId => dispatch(actions.removeRecipes(productId)),
+        removeRecipesByProductId: productId => dispatch(actions.removeRecipesByProductId(productId)),
     }
 };
 

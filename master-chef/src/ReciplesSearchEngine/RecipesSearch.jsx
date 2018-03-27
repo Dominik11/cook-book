@@ -17,34 +17,10 @@ class RecipesSearch extends Component {
         };
     }
 
-    switchProductSelection = selectedProduct => {
-        this.setState(prevState => ({
-            products: prevState.products.map(product =>
-                product.id === selectedProduct.id ?
-                    {
-                        ...product,
-                        selected: !selectedProduct.selected
-                    } :
-                    product
-            )
-        }));
-    };
-
-    selectProduct = selectedProduct => {
-        this.setState(prevState => ({
-            ingredients: [
-                ...prevState.ingredients,
-                selectedProduct.id
-            ],
-        }));
-        this.switchProductSelection(selectedProduct);
-    };
-
-    deselectProduct = productToDeselect => {
-        this.setState(prevState => ({
-            ingredients: prevState.ingredients.filter(productId => productId !== productToDeselect.id)
-        }));
-        this.switchProductSelection(productToDeselect);
+    setSelectedIngredients = ingredients => {
+        this.setState({
+            ingredients: ingredients
+        })
     };
 
     filteredRecipes = () => {
@@ -63,9 +39,8 @@ class RecipesSearch extends Component {
         return (
             <div>
                 <SelectProductList
-                    products={this.state.products}
-                    selectProduct={this.selectProduct}
-                    deselectProduct={this.deselectProduct}
+                    products={this.props.products}
+                    setSelectedIngredients={this.setSelectedIngredients}
                 />
                 <RecipeList
                     recipes={this.filteredRecipes()}
@@ -79,8 +54,13 @@ class RecipesSearch extends Component {
 
 
 RecipesSearch.propTypes = {
-    recipes: PropTypes.array.isRequired,
-    products: PropTypes.array.isRequired
+    recipes: PropTypes.array,
+    products: PropTypes.array
+};
+
+RecipesSearch.defaultProps = {
+    products: [],
+    recipes: []
 };
 
 const mapStateToProps = (state) => {
