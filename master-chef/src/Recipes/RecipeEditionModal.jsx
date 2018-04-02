@@ -1,21 +1,13 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import Modal from 'react-modal';
+import Modal from "react-modal";
 import {Form, Text, TextArea} from "react-form";
-import messages from "../shared/messages";
-import SelectProductList from "../shared/SelectProductList";
 import get from "lodash/get";
-
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)'
-    }
-};
+import SelectProductList from "../shared/SelectProductList";
+import Recipe from "./RecipeModel";
+import messages from "../shared/messages";
+import {isBlank} from "../shared/helper";
+import {modalStyles} from "../shared/constants"
 
 class RecipeEditionModal extends Component {
 
@@ -44,12 +36,12 @@ class RecipeEditionModal extends Component {
             return;
         }
 
-        const recipeToUpdate = {
-            id: this.state.recipeToUpdate.id,
-            name: updatedRecipeFormValues.name,
-            description: updatedRecipeFormValues.description,
-            ingredients: this.state.ingredients
-        };
+        const recipeToUpdate = new Recipe(
+            this.state.recipeToUpdate.id,
+            updatedRecipeFormValues.name,
+            updatedRecipeFormValues.description,
+            this.state.ingredients
+        );
         this.props.updateRecipe(recipeToUpdate);
         formApi.resetAll();
         this.props.close();
@@ -82,17 +74,16 @@ class RecipeEditionModal extends Component {
 
     render() {
         const validateRecipe = value => ({
-            error: !value ? messages.pl.validation.fieldNullOrEmpty : null
+            error: isBlank(value) ? messages.pl.validation.fieldNullOrEmpty : null
         });
 
         return (
             <Modal
                 isOpen={true}
                 onRequestClose={this.props.close}
-                style={customStyles}
+                style={modalStyles}
             >
                 <h2>{messages.pl.modals.recipeEdition.content}</h2>
-
                 <SelectProductList
                     products={this.state.products}
                     setSelectedIngredients={this.setSelectedIngredients}
@@ -108,9 +99,8 @@ class RecipeEditionModal extends Component {
                         <form
                             onSubmit={formApi.submitForm}
                             id="newRecipeForm"
-                            className="mb-4"
+                            className="recipe-edition-form"
                         >
-                            <label htmlFor="recipeName">{messages.pl.recipes.labels.newRecipe}:</label>
                             <Text
                                 field="name"
                                 id="name"
@@ -129,13 +119,14 @@ class RecipeEditionModal extends Component {
                             <div className="validation-error">{get(formApi.errors, "description", null)}</div>
                             <button
                                 type="button"
+                                className="modal-cancel-button"
                                 onClick={this.props.close}
                             >
                                 {messages.pl.modals.recipeEdition.cancel}
                             </button>
                             <button
                                 type="submit"
-                                className="btn btn-primary"
+                                className="submit-button modal-submit-button"
                             >
                                 {messages.pl.modals.recipeEdition.submit}
                             </button>

@@ -1,25 +1,15 @@
-import React, {Component} from 'react';
+import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Form, Text} from 'react-form';
+import {Form, Text} from "react-form";
 import PropTypes from "prop-types";
-import isEmpty from "lodash/isEmpty";
-import Modal from 'react-modal';
+import Modal from "react-modal";
 import get from "lodash/get";
 import ProductList from "./ProductList"
+import Product from "./ProductModel"
+import {isBlank, generateRandomId} from "../shared/helper";
 import messages from "../shared/messages"
-import {generateRandomId} from "../shared/helper";
 import * as actions from "./actions";
-
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)'
-    }
-};
+import {modalStyles} from "../shared/constants"
 
 class ProductBook extends Component {
 
@@ -40,7 +30,7 @@ class ProductBook extends Component {
         }
     };
 
-    openModal = (productToRemove) => {
+    openModal = productToRemove => {
         this.setState({
             modalIsOpen: true,
             productToRemove: productToRemove
@@ -52,15 +42,15 @@ class ProductBook extends Component {
     };
 
     addProduct = newProductFormValues => {
-        const newProduct = {
-            id: generateRandomId(),
-            name: newProductFormValues.newProductName
-        };
+        const newProduct = new Product(
+            generateRandomId(),
+            newProductFormValues.newProductName
+        );
 
         this.props.addProduct(newProduct);
     };
 
-    isProductUsed = (productId) => {
+    isProductUsed = productId => {
         const recipe = this.props.recipes.find(recipe =>
             recipe.ingredients.includes(productId)
         );
@@ -81,7 +71,7 @@ class ProductBook extends Component {
         this.closeModal();
     };
 
-    removeProductAndRelatedRecipes = (productToRemove) => {
+    removeProductAndRelatedRecipes = productToRemove => {
         this.props.removeProduct(productToRemove);
         this.props.removeRecipesByProductId(productToRemove.id);
     };
@@ -102,7 +92,7 @@ class ProductBook extends Component {
     };
 
     updateProduct = productToUpdate => {
-        if (isEmpty(productToUpdate.newName)) {
+        if (isBlank(productToUpdate.newName)) {
             this.throwUpdateProductNameValidationError(productToUpdate);
             return;
         }
@@ -138,7 +128,7 @@ class ProductBook extends Component {
 
     render() {
         const validateNewProduct = value => ({
-            error: !value ? messages.pl.validation.fieldNullOrEmpty : null
+            error: isBlank(value) ? messages.pl.validation.fieldNullOrEmpty : null
         });
 
         return (
@@ -146,54 +136,68 @@ class ProductBook extends Component {
                 <Modal
                     isOpen={this.state.modalIsOpen}
                     onRequestClose={this.closeModal}
-                    style={customStyles}
+                    style={modalStyles}
                 >
                     <h2>{messages.pl.modals.removeProduct.content}</h2>
-                    <button onClick={this.closeModal}>{messages.pl.modals.removeProduct.cancel}</button>
-                    <button onClick={() => this.removeProduct(this.state.productToRemove)}>
+                    <button
+                        onClick={this.closeModal}
+                        className="modal-cancel-button"
+                    >
+                        {messages.pl.modals.removeProduct.cancel}
+                    </button>
+                    <button
+                        onClick={() => this.removeProduct(this.state.productToRemove)}
+                        className="submit-button modal-submit-button"
+                    >
                         {messages.pl.modals.removeProduct.submit}
                     </button>
                 </Modal>
-                <Form
-                    onSubmit={(values, e, formApi) => {
-                        this.addProduct(values);
-                        formApi.resetAll();
-                    }}
-                    validateOnSubmit
-                >
-                    {formApi => (
-                        <form
-                            onSubmit={formApi.submitForm}
-                            id="newProductForm"
-                            className="mb-4"
-                        >
-                            <label htmlFor="newProductName">{messages.pl.products.labels.newProduct}:</label>
-                            <Text
-                                field="newProductName"
-                                id="newProductName"
-                                validate={validateNewProduct}
-                                className={get(formApi.errors, "newProductName", null) ? "invalid-value" : ""}
-                            />
-                            <div className="validation-error">
-                                {get(formApi.errors, "newProductName", null)}
-                            </div>
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
+                <div className="middle_left">
+                    <Form
+                        onSubmit={(values, e, formApi) => {
+                            this.addProduct(values);
+                            formApi.resetAll();
+                        }}
+                        validateOnSubmit
+                    >
+                        {formApi => (
+                            <form
+                                onSubmit={formApi.submitForm}
+                                id="newProductForm"
+                                className="mb-4"
                             >
-                                {messages.pl.products.labels.addProduct}
-                            </button>
+                                <label htmlFor="newProductName">{messages.pl.products.labels.newProduct}</label>
+                                <Text
+                                    field="newProductName"
+                                    id="newProductName"
+                                    validate={validateNewProduct}
+                                    className={get(formApi.errors, "newProductName", null) ? "invalid-value" : ""}
+                                    placeholder={messages.pl.products.placeholders.newProduct}
+                                />
+                                <div className="validation-error">
+                                    {get(formApi.errors, "newProductName", null)}
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="submit-button"
+                                >
+                                    {messages.pl.products.labels.addProduct}
+                                </button>
 
-                        </form>
-                    )}
-                </Form>
-                <ProductList
-                    products={this.state.products}
-                    removeProduct={this.prepareRemoveProduct}
-                    switchProductEdition={this.switchProductEdition}
-                    updateProduct={this.updateProduct}
-                    setNewName={this.setNewName}
-                />
+                            </form>
+                        )}
+                    </Form>
+                </div>
+                <div className="middle_right">
+                    <label>{messages.pl.products.labels.list}</label>
+                    <ProductList
+                        products={this.state.products}
+                        removeProduct={this.prepareRemoveProduct}
+                        switchProductEdition={this.switchProductEdition}
+                        updateProduct={this.updateProduct}
+                        setNewName={this.setNewName}
+                    />
+                </div>
             </div>
         );
     }

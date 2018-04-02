@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, {Component} from "react";
 import PropTypes from "prop-types";
-import messages from "../shared/messages";
 import Button from "../shared/Button";
+import messages from "../shared/messages";
 
 class ProductList extends Component {
 
@@ -70,15 +70,20 @@ class ProductList extends Component {
         ];
 
         return (
-            <div key={product.id}>
-                <input
-                    type="text"
-                    onChange={(event) => this.setNewName(event, product)}
-                    value={product.newName}
-                    className={product.error ? "invalid-value" : ""}
-                />
+            <div
+                key={product.id}
+                className="product-list-row"
+            >
+                <div>
+                    <input
+                        type="text"
+                        onChange={(event) => this.setNewName(event, product)}
+                        value={product.newName}
+                        className={product.error ? "invalid-value" : ""}
+                    />
+                    {this.renderButtons(buttonsConfig, product)}
+                </div>
                 {product.error ? <span className="validation-error">{product.error}</span> : null}
-                {this.renderButtons(buttonsConfig, product)}
             </div>
         )
     };
@@ -96,8 +101,11 @@ class ProductList extends Component {
         ];
 
         return (
-            <div key={product.id}>
-                <li key={product.id}>{product.name}</li>
+            <div
+                key={product.id}
+                className="product-list-row"
+            >
+                <p>{product.name}</p>
                 {this.renderButtons(buttonsConfig, product)}
             </div>
         )
@@ -117,14 +125,18 @@ class ProductList extends Component {
         const shouldRenderProductList = this.props.products.length > 0;
 
         return shouldRenderProductList ? (
-            <div>
-                <input onInput={this.setPhrase} />
-                <ul>
+            <div className="product-list">
+                <input
+                    className="product-search-input"
+                    onInput={this.setPhrase}
+                    placeholder={messages.pl.products.placeholders.searchProduct}
+                />
+                <div>
                     {this.renderProductList(this.state.products)}
-                </ul>
+                </div>
             </div>
         ) : (
-            <p>{messages.pl.products.labels.emptyList}</p>
+            <p className="error-message">{messages.pl.products.labels.emptyList}</p>
         );
     }
 }

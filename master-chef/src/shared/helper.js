@@ -8,7 +8,12 @@ export function getProductName(products = [], productId) {
     if (!productId) {
         return;
     }
+
     const product = products.find(product => product.id === productId);
 
-    return get(product, "name", "Brak nazwy produktu!");
+    return get(product, "name", "");
+}
+
+export function isBlank(text = "") {
+    return !text.trim();
 }

@@ -38,6 +38,7 @@ class RecipesSearch extends Component {
     render() {
         return (
             <div>
+                <label>{messages.pl.search.labels.info}</label>
                 <SelectProductList
                     products={this.props.products}
                     setSelectedIngredients={this.setSelectedIngredients}
@@ -63,7 +64,7 @@ RecipesSearch.defaultProps = {
     recipes: []
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         recipes: state.recipes,
         products: state.products

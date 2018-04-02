@@ -1,9 +1,10 @@
-import React, {Component} from 'react';
+import React, {Component} from "react";
 import PropTypes from "prop-types";
-import messages from "./messages";
-import {getProductName} from "./helper";
+import {FaAngleDown, FaAngleUp} from "react-icons/lib/fa";
+import RecipeEditionModal from "../Recipes/RecipeEditionModal";
 import Button from "./Button";
-import RecipeEditionModal from "../Recipes/RecipeEditionModal"
+import {getProductName} from "./helper";
+import messages from "./messages";
 
 class RecipeList extends Component {
 
@@ -11,7 +12,17 @@ class RecipeList extends Component {
         super(props);
 
         this.state = {
+            parentRecipes: props.recipes,
+            recipes: props.recipes,
             opened: false
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.recipes !== this.state.parentRecipes) {
+            this.setState({
+                recipes: nextProps.recipes
+            })
         }
     }
 
@@ -57,33 +68,63 @@ class RecipeList extends Component {
                 key={index}
                 onButtonClick={() => buttonConfig.action(recipe)}
                 label={messages.pl.recipes.labels[buttonConfig.label]}
+                icon={buttonConfig.icon}
             />
         );
+    };
+
+    switchDetailsVisibility = selectedRecipe => {
+        this.setState(prevState => ({
+            recipes: prevState.recipes.map(recipe =>
+                recipe.id === selectedRecipe.id ? {
+                    ...recipe,
+                    showDetails: !selectedRecipe.showDetails
+                } : recipe
+            )
+        }));
     };
 
     renderRecipeList = recipes => {
         const shouldRenderRecipesList = recipes.length > 0;
 
         return shouldRenderRecipesList ?
-            recipes.map(this.renderRecipe) :
-            this.props.recipesEmptyListMessage;
+            recipes.map(this.renderRecipe) : (
+                <p className="error-message">{this.props.recipesEmptyListMessage}</p>
+            );
+    };
+
+    renderRecipeDetails = recipe => {
+        return recipe.showDetails ? (
+            <div className="recipe-details">
+                <h3>{messages.pl.recipes.labels.preparingDescription}</h3>
+                {recipe.description}
+                <h3>{messages.pl.recipes.labels.ingredients}</h3>
+                <ul>
+                    {recipe.ingredients.map(productId =>
+                        <li key={productId}>
+                            {getProductName(this.props.products, productId)}
+                        </li>
+                    )}
+                </ul>
+            </div>
+        ) : null;
     };
 
     renderRecipe = recipe => {
-        /*tymczasowe render*/
         return (
-            <li key={recipe.id}>
-                {recipe.name}|
-                {recipe.description}|
-                [
-                {recipe.ingredients.map(productId =>
-                    <span key={productId}>
-                            {getProductName(this.props.products, productId)},
-                        </span>
-                )}
-                ]
+            <div
+                key={recipe.id}
+                className="recipe-list-row"
+            >
+                {recipe.name}
+                <Button
+                    onButtonClick={() => this.switchDetailsVisibility(recipe)}
+                    label={messages.pl.recipes.labels.details}
+                    icon={recipe.showDetails ? <FaAngleUp/> : <FaAngleDown/>}
+                />
                 {this.renderEditionActions(recipe)}
-            </li>
+                {this.renderRecipeDetails(recipe)}
+            </div>
         )
     };
 
@@ -100,9 +141,9 @@ class RecipeList extends Component {
 
     render() {
         return (
-            <div>
+            <div className="recipe-list">
                 {this.renderEditionModal()}
-                {this.renderRecipeList(this.props.recipes)}
+                {this.renderRecipeList(this.state.recipes)}
             </div>
         )
     }

@@ -82,8 +82,9 @@ class SelectProductList extends Component {
         const shouldRenderProductsList = this.state.products.length > 0;
 
         return shouldRenderProductsList ?
-            this.state.products.map(this.renderProduct) :
-            messages.pl.recipes.labels.emptyProductsList;
+            this.state.products.map(this.renderProduct) : (
+                <p className="error-message">{messages.pl.recipes.labels.emptyProductsList}</p>
+            );
     };
 
     renderProduct = product => {
@@ -105,7 +106,11 @@ class SelectProductList extends Component {
     render() {
         return (
             <div>
-                <input onInput={this.filterProducts}/>
+                <input
+                    className="product-search-input"
+                    placeholder="szukaj produktu"
+                    onInput={this.filterProducts}
+                />
                 {this.renderProductList()}
             </div>
         )

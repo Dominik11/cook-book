@@ -1,12 +1,13 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import get from "lodash/get";
-import messages from "../shared/messages";
+import {connect} from "react-redux";
 import {Form, Text, TextArea} from "react-form";
+import get from "lodash/get";
 import RecipeList from "../shared/RecipeList";
 import SelectProductList from "../shared/SelectProductList";
-import {generateRandomId} from "../shared/helper"
-import {connect} from "react-redux";
+import Recipe from "./RecipeModel";
+import messages from "../shared/messages";
+import {isBlank, generateRandomId} from "../shared/helper";
 import * as actions from "./actions";
 
 class RecipesCreator extends Component {
@@ -45,13 +46,12 @@ class RecipesCreator extends Component {
             return;
         }
 
-        this.props.addRecipeToStore({
-            id: generateRandomId(),
-            name: newRecipeFormValues.name,
-            description: newRecipeFormValues.description,
-            ingredients: this.state.ingredients
-        });
-
+        this.props.addRecipeToStore(new Recipe(
+            generateRandomId(),
+            newRecipeFormValues.name,
+            newRecipeFormValues.description,
+            this.state.ingredients
+        ));
         formApi.resetAll();
         this.clearForm();
     };
@@ -61,10 +61,9 @@ class RecipesCreator extends Component {
             anyIngredientSelectedError: null,
             ingredients: [],
             products: state.products.map(product => ({
-                    ...product,
-                    selected: false
-                })
-            ),
+                ...product,
+                selected: false
+            })),
             resetSelectForm: !state.resetSelectForm
         }));
     };
@@ -77,61 +76,66 @@ class RecipesCreator extends Component {
 
     render() {
         const validateNewRecipe = value => ({
-            error: !value ? messages.pl.validation.fieldNullOrEmpty : null
+            error: isBlank(value) ? messages.pl.validation.fieldNullOrEmpty : null
         });
 
         return (
             <div>
-                <SelectProductList
-                    products={this.state.products}
-                    setSelectedIngredients={this.setSelectedIngredients}
-                    resetSelectForm={this.state.resetSelectForm}
-                />
-                {this.renderIngredientsError()}
-                <Form
-                    onSubmit={(values, e, formApi) => this.addRecipe(values, formApi)}
-                    validateOnSubmit
-                >
-                    {formApi => (
-                        <form
-                            onSubmit={formApi.submitForm}
-                            id="newRecipeForm"
-                            className="mb-4"
-                        >
-                            <label htmlFor="recipeName">{messages.pl.recipes.labels.newRecipe}:</label>
-                            <Text
-                                field="name"
-                                id="name"
-                                validate={validateNewRecipe}
-                                className={formApi.errors && formApi.errors.name ? "invalid-value" : ""}
-                                placeholder={messages.pl.recipes.labels.name}
-                            />
-                            <div className="validation-error">{get(formApi.errors, "name", null)}</div>
-                            <TextArea
-                                field="description"
-                                id="description"
-                                validate={validateNewRecipe}
-                                className={formApi.errors && formApi.errors.description ? "invalid-value" : ""}
-                                placeholder={messages.pl.recipes.labels.description}
-                            />
-                            <div className="validation-error">{get(formApi.errors, "description", null)}</div>
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
+                <div className="middle_left">
+                    <label>{messages.pl.recipes.labels.createNewRecipe}</label>
+                    <SelectProductList
+                        products={this.state.products}
+                        setSelectedIngredients={this.setSelectedIngredients}
+                        resetSelectForm={this.state.resetSelectForm}
+                    />
+                    {this.renderIngredientsError()}
+                    <Form
+                        onSubmit={(values, e, formApi) => this.addRecipe(values, formApi)}
+                        validateOnSubmit
+                    >
+                        {formApi => (
+                            <form
+                                onSubmit={formApi.submitForm}
+                                id="newRecipeForm"
+                                className="mb-4"
                             >
-                                {messages.pl.recipes.labels.addRecipe}
-                            </button>
-                        </form>
-                    )}
-                </Form>
-                <RecipeList
-                    recipes={this.state.recipes}
-                    products={this.props.products}
-                    recipesEmptyListMessage={messages.pl.recipes.labels.emptyRecipesList}
-                    removeRecipe={this.props.removeRecipeToStore}
-                    showEditionActions
-                    updateRecipe={this.props.updateRecipe}
-                />
+                                <Text
+                                    field="name"
+                                    id="name"
+                                    validate={validateNewRecipe}
+                                    className={formApi.errors && formApi.errors.name ? "invalid-value" : ""}
+                                    placeholder={messages.pl.recipes.labels.name}
+                                />
+                                <div className="validation-error">{get(formApi.errors, "name", null)}</div>
+                                <TextArea
+                                    field="description"
+                                    id="description"
+                                    validate={validateNewRecipe}
+                                    className={formApi.errors && formApi.errors.description ? "invalid-value" : ""}
+                                    placeholder={messages.pl.recipes.labels.description}
+                                />
+                                <div className="validation-error">{get(formApi.errors, "description", null)}</div>
+                                <button
+                                    type="submit"
+                                    className="submit-button"
+                                >
+                                    {messages.pl.recipes.labels.addRecipe}
+                                </button>
+                            </form>
+                        )}
+                    </Form>
+                </div>
+                <div className="middle_right">
+                    <label>{messages.pl.recipes.labels.list}</label>
+                    <RecipeList
+                        recipes={this.props.recipes}
+                        products={this.props.products}
+                        recipesEmptyListMessage={messages.pl.recipes.labels.emptyRecipesList}
+                        removeRecipe={this.props.removeRecipeToStore}
+                        showEditionActions
+                        updateRecipe={this.props.updateRecipe}
+                    />
+                </div>
             </div>
         )
     };
@@ -155,6 +159,7 @@ const mapStateToProps = (state) => {
         recipes: state.recipes
     };
 };
+
 const mapDispatchToProps = dispatch => {
     return {
         addRecipeToStore: newRecipe => dispatch(actions.addRecipe(newRecipe)),
