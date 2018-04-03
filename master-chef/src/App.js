@@ -13,14 +13,18 @@ import products from "./Products/reducers";
 import recipes from "./Recipes/reducers";
 import {initialState} from "./shared/constants";
 import messages from "./shared/messages";
-import "./App.css";
+import "./styles/App.css";
 
 const reducers = combineReducers({
     products,
     recipes
 });
 
-const store = createStore(reducers, initialState);
+const store = createStore(
+    reducers,
+    initialState,
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 
 class App extends Component {
 
@@ -29,10 +33,10 @@ class App extends Component {
             <Provider store={store}>
                 <Router>
                     <div className="container">
-                        <div id="header">
+                        <div className="header">
                             <h1>{messages.pl.menu.header}</h1>
                         </div>
-                        <div id="menu">
+                        <div className="menu">
                             <ul>
                                 <li>
                                     <NavLink exact to="/" activeClassName="active">{messages.pl.menu.products}</NavLink>
@@ -45,15 +49,12 @@ class App extends Component {
                                 </li>
                             </ul>
                         </div>
-                        <div
-                            id="middle"
-                            className="float-fix"
-                        >
+                        <div className="middle float-fix">
                             <Route exact path="/" component={ProductBook}/>
                             <Route path="/recipes" component={RecipesCreator}/>
                             <Route path="/search" component={RecipesSearch}/>
                         </div>
-                        <div id="footer">
+                        <div className="footer">
                             <p>{messages.pl.menu.footer}</p>
                         </div>
                     </div>

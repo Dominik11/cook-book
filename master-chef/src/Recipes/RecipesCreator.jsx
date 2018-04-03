@@ -96,8 +96,7 @@ class RecipesCreator extends Component {
                         {formApi => (
                             <form
                                 onSubmit={formApi.submitForm}
-                                id="newRecipeForm"
-                                className="mb-4"
+                                className="new-recipe-form"
                             >
                                 <Text
                                     field="name"

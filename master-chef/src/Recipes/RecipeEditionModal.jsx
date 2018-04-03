@@ -98,7 +98,6 @@ class RecipeEditionModal extends Component {
                     {formApi => (
                         <form
                             onSubmit={formApi.submitForm}
-                            id="newRecipeForm"
                             className="recipe-edition-form"
                         >
                             <Text
