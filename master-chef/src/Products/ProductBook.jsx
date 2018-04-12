@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import {connect} from "react-redux";
 import {Form, Text} from "react-form";
 import PropTypes from "prop-types";
 import Modal from "react-modal";
@@ -8,7 +7,6 @@ import ProductList from "./ProductList"
 import Product from "./ProductModel"
 import {isBlank, generateRandomId} from "../shared/helper";
 import messages from "../shared/messages"
-import * as actions from "./actions";
 import {modalStyles} from "../shared/constants"
 
 class ProductBook extends Component {
@@ -79,14 +77,12 @@ class ProductBook extends Component {
     switchProductEdition = selectedProduct => {
         this.setState(state => ({
             products: state.products.map(product =>
-                product.id === selectedProduct.id ?
-                    {
+                product.id === selectedProduct.id ? {
                         ...product,
                         editMode: !selectedProduct.editMode,
                         newName: selectedProduct.name,
                         error: null
-                    } :
-                    product
+                    } : product
             )
         }));
     };
@@ -103,12 +99,10 @@ class ProductBook extends Component {
     throwUpdateProductNameValidationError = productToUpdate => {
         this.setState(state => ({
             products: state.products.map(product =>
-                product.id === productToUpdate.id ?
-                    {
+                product.id === productToUpdate.id ? {
                         ...product,
                         error: messages.pl.validation.fieldNullOrEmpty
-                    } :
-                    product
+                    } : product
             )
         }));
     };
@@ -116,12 +110,10 @@ class ProductBook extends Component {
     setNewName = (productToSetName, newName) => {
         this.setState(state => ({
             products: state.products.map(product =>
-                product.id === productToSetName.id ?
-                    {
+                product.id === productToSetName.id ? {
                         ...product,
                         newName: newName
-                    } :
-                    product
+                    } : product
             )
         }));
     };
@@ -217,19 +209,4 @@ ProductBook.defaultProps = {
     recipes: []
 };
 
-const mapStateToProps = state => {
-    return {
-        products: state.products,
-        recipes: state.recipes,
-    };
-};
-const mapDispatchToProps = dispatch => {
-    return {
-        addProduct: newProduct => dispatch(actions.addProduct(newProduct)),
-        updateProduct: product => dispatch(actions.updateProduct(product)),
-        removeProduct: product => dispatch(actions.removeProduct(product)),
-        removeRecipesByProductId: productId => dispatch(actions.removeRecipesByProductId(productId)),
-    }
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProductBook);
+export default ProductBook;

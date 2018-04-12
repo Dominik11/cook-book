@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import {connect} from "react-redux";
 import SelectProductList from "../shared/SelectProductList"
 import RecipeList from "../shared/RecipeList"
 import messages from "../shared/messages"
@@ -53,7 +52,6 @@ class RecipesSearch extends Component {
     }
 }
 
-
 RecipesSearch.propTypes = {
     recipes: PropTypes.array,
     products: PropTypes.array
@@ -64,11 +62,4 @@ RecipesSearch.defaultProps = {
     recipes: []
 };
 
-const mapStateToProps = state => {
-    return {
-        recipes: state.recipes,
-        products: state.products
-    };
-};
-
-export default connect(mapStateToProps, null)(RecipesSearch);
+export default RecipesSearch;

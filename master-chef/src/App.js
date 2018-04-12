@@ -6,9 +6,9 @@ import {
 } from "react-router-dom";
 import {combineReducers, createStore} from "redux";
 import {Provider} from "react-redux";
-import ProductBook from "./Products/ProductBook";
-import RecipesCreator from "./Recipes/RecipesCreator";
-import RecipesSearch from "./ReciplesSearchEngine/RecipesSearch";
+import ProductBook from "./Products/ProductBookContainer";
+import RecipesCreator from "./Recipes/RecipesCreatorContainer";
+import RecipesSearch from "./ReciplesSearchEngine/RecipesSearchContainer";
 import products from "./Products/reducers";
 import recipes from "./Recipes/reducers";
 import {initialState} from "./shared/constants";

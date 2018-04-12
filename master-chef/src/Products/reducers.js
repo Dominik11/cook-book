@@ -12,12 +12,10 @@ const productsData = (state = [], action) => {
             const productToUpdate = action.product;
 
             return state.map(product =>
-                product.id === productToUpdate.id ?
-                    {
+                product.id === productToUpdate.id ? {
                         ...product,
                         name: productToUpdate.newName
-                    } :
-                    product
+                    } : product
             );
         }
         case constants.REMOVE_PRODUCT: {

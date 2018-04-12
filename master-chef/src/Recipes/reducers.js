@@ -16,14 +16,12 @@ const recipesData = (state = [], action) => {
             const recipeToUpdate = action.recipe;
 
             return state.map(recipe =>
-                recipe.id === recipeToUpdate.id ?
-                    {
+                recipe.id === recipeToUpdate.id ? {
                         ...recipe,
                         name: recipeToUpdate.name,
                         description: recipeToUpdate.description,
                         ingredients: recipeToUpdate.ingredients
-                    } :
-                    recipe
+                    } : recipe
             );
         }
         case constants.REMOVE_RECIPES_BY_PRODUCT_ID: {

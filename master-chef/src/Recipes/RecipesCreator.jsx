@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
-import {connect} from "react-redux";
 import {Form, Text, TextArea} from "react-form";
 import get from "lodash/get";
 import RecipeList from "../shared/RecipeList";
@@ -8,7 +7,6 @@ import SelectProductList from "../shared/SelectProductList";
 import Recipe from "./RecipeModel";
 import messages from "../shared/messages";
 import {isBlank, generateRandomId} from "../shared/helper";
-import * as actions from "./actions";
 
 class RecipesCreator extends Component {
 
@@ -152,19 +150,4 @@ RecipesCreator.defaultProps = {
     recipes: []
 };
 
-const mapStateToProps = (state) => {
-    return {
-        products: state.products,
-        recipes: state.recipes
-    };
-};
-
-const mapDispatchToProps = dispatch => {
-    return {
-        addRecipeToStore: newRecipe => dispatch(actions.addRecipe(newRecipe)),
-        removeRecipeToStore: recipe => dispatch(actions.removeRecipeById(recipe.id)),
-        updateRecipe: recipe => dispatch(actions.updateRecipe(recipe))
-    }
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(RecipesCreator);
+export default RecipesCreator;
